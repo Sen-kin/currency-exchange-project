@@ -1,6 +1,5 @@
 package Controllers;
 
-import Services.CurrenciesService;
 import Services.CurrencyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -10,13 +9,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
 
 @WebServlet("/currency/*")
 public class CurrencyController extends HttpServlet {
 
-    ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     private final CurrencyService currencyService = CurrencyService.getInstance();
 
