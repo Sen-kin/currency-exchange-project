@@ -1,6 +1,6 @@
 package services;
 
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.InvalidCodeExeption;
 import model.dao.CurrencyDao;
 import model.dto.CurrencyDto;
@@ -16,7 +16,7 @@ public class CurrencyService {
     private CurrencyService(){}
 
 
-    public Optional<CurrencyDto> findByCode(String code) throws InvalidCodeExeption, DataBaseIsNotAvailibleExeption {
+    public Optional<CurrencyDto> findByCode(String code) throws InvalidCodeExeption, DataBaseIsNotAvalibleExeption {
 
     return currencyDao.findByCode(code)
             .map(dao -> new CurrencyDto(
