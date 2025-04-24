@@ -1,7 +1,7 @@
 package services;
 
 import model.CurrencyAlreadyExistExeption;
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.dto.CurrencyDto;
 import model.dao.CurrenciesDao;
 import model.entity.CurrencyEntity;
@@ -31,12 +31,12 @@ public class CurrenciesService {
                             )
                     )
                     .collect(Collectors.toList());
-        } catch (DataBaseIsNotAvailibleExeption e) {
+        } catch (DataBaseIsNotAvalibleExeption e) {
             throw new ServiceExeption(e);
         }
     }
 
-    public CurrencyDto createCurrency(CurrencyDto currencyDto) throws DataBaseIsNotAvailibleExeption, CurrencyAlreadyExistExeption {
+    public CurrencyDto createCurrency(CurrencyDto currencyDto) throws DataBaseIsNotAvalibleExeption, CurrencyAlreadyExistExeption {
 
         Optional<CurrencyEntity> createdEntity = currenciesDao.save(
                 new CurrencyEntity(currencyDto.id(),

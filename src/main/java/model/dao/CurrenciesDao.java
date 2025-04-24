@@ -1,7 +1,7 @@
 package model.dao;
 
 import model.CurrencyAlreadyExistExeption;
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.entity.CurrencyEntity;
 import lombok.SneakyThrows;
 import util.ConnectionManager;
@@ -32,7 +32,7 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
 
     @Override
 
-    public List<CurrencyEntity> findAll() throws DataBaseIsNotAvailibleExeption {
+    public List<CurrencyEntity> findAll() throws DataBaseIsNotAvalibleExeption {
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_ALL)) {
 
@@ -45,12 +45,12 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
             }
             return currencies;
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvailibleExeption(e);
+            throw new DataBaseIsNotAvalibleExeption(e);
         }
     }
 
     @Override
-    public Optional<CurrencyEntity> findById(Long id) throws DataBaseIsNotAvailibleExeption {
+    public Optional<CurrencyEntity> findById(Long id) throws DataBaseIsNotAvalibleExeption {
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_BY_ID)){
 
@@ -60,7 +60,7 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
 
         return Optional.of(builder(result));
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvailibleExeption(e);
+            throw new DataBaseIsNotAvalibleExeption(e);
         }
     }
 
@@ -81,7 +81,7 @@ try(var connection = ConnectionManager.get();
     }
 
     @Override
-    public Optional<CurrencyEntity> save(CurrencyEntity entity) throws DataBaseIsNotAvailibleExeption, CurrencyAlreadyExistExeption{
+    public Optional<CurrencyEntity> save(CurrencyEntity entity) throws DataBaseIsNotAvalibleExeption, CurrencyAlreadyExistExeption{
         try(var connection = ConnectionManager.get();
             var statement = connection.prepareStatement(INSERT_CURRENCY, Statement.RETURN_GENERATED_KEYS)
         ){
@@ -103,7 +103,7 @@ try(var connection = ConnectionManager.get();
         }
 
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvailibleExeption(e);
+            throw new DataBaseIsNotAvalibleExeption(e);
         }
 
         return Optional.empty();
