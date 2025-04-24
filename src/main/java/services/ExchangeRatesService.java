@@ -1,6 +1,6 @@
 package services;
 
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.ExchangeRateIsNotExistExeption;
 import model.dao.ExchangeRatesDao;
 import model.dto.ExchangeRatesDto;
@@ -16,12 +16,12 @@ public class ExchangeRatesService {
     private ExchangeRatesService() {}
 
 
-    public List<ExchangeRatesDto> findAllExchangeRates() throws DataBaseIsNotAvailibleExeption {
+    public List<ExchangeRatesDto> findAllExchangeRates() throws DataBaseIsNotAvalibleExeption {
         return exchangeRatesDao.findAllExchangeRates();
     }
 
     public ExchangeRatesDto findExchangeRateByCodes(String baseCode, String targetCode)
-            throws DataBaseIsNotAvailibleExeption, ExchangeRateIsNotExistExeption {
+            throws DataBaseIsNotAvalibleExeption, ExchangeRateIsNotExistExeption {
 
         return exchangeRatesDao.findExchangeRate(baseCode, targetCode).orElseThrow(ExchangeRateIsNotExistExeption::new);
     }

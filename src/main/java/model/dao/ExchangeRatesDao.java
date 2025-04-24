@@ -1,6 +1,6 @@
 package model.dao;
 
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.dto.CurrencyDto;
 import model.dto.ExchangeRatesDto;
 import lombok.SneakyThrows;
@@ -36,7 +36,7 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
 
 
     @Override
-    public List<ExchangeRatesDto> findAllExchangeRates() throws DataBaseIsNotAvailibleExeption{
+    public List<ExchangeRatesDto> findAllExchangeRates() throws DataBaseIsNotAvalibleExeption {
 
         try(var connection = ConnectionManager.get();
             var statement = connection.prepareStatement(FIND_ALL_EXCHANGE_RATES)
@@ -50,12 +50,12 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
             return exchangeRates;
         }
         catch (SQLException e) {
-            throw new DataBaseIsNotAvailibleExeption(e);
+            throw new DataBaseIsNotAvalibleExeption(e);
         }
     }
 
     @Override
-    public Optional<ExchangeRatesDto> findExchangeRate(String baseCode, String targetCode) throws DataBaseIsNotAvailibleExeption{
+    public Optional<ExchangeRatesDto> findExchangeRate(String baseCode, String targetCode) throws DataBaseIsNotAvalibleExeption {
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_EXCHANGE_RATE_BY_CODES)) {
 
@@ -68,7 +68,7 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
         return Optional.of(builder(resultset));
 
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvailibleExeption(e);
+            throw new DataBaseIsNotAvalibleExeption(e);
         }
     }
 
@@ -107,7 +107,7 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
     public static void main(String[] args) {
         try {
             System.out.println(INSTANCE.findExchangeRate("USD", "EUR"));
-        } catch (DataBaseIsNotAvailibleExeption e) {
+        } catch (DataBaseIsNotAvalibleExeption e) {
             throw new RuntimeException(e);
         }
     }
