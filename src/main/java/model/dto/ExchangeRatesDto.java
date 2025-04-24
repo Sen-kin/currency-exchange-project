@@ -1,7 +1,6 @@
-package Model.entity;
+package model.dto;
 
 
-import Model.dto.CurrencyDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
