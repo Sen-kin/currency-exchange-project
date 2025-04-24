@@ -1,29 +1,27 @@
 package util;
 
-import lombok.SneakyThrows;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.experimental.UtilityClass;
+
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@UtilityClass
 public class ConnectionManager {
 
+        private static final HikariConfig config = new HikariConfig();
+        private static final HikariDataSource dataSource;
 
-    static{
-        loadDriver();
-    }
+        static {
+            config.setJdbcUrl("jdbc:sqlite:C:\\Users\\User\\IdeaProjects\\currency-exchange\\identifier.sqlite");
+            config.setDriverClassName("org.sqlite.JDBC");
+            dataSource = new HikariDataSource(config);
+        }
 
-    @SneakyThrows
-    private static void loadDriver() {
-        Class.forName("org.sqlite.JDBC");
-    }
-
-        public static Connection get(){
-            try {
-                return DriverManager.getConnection("jdbc:sqlite:C:\\Users\\User\\IdeaProjects\\currency-exchange\\identifier.sqlite");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
+        public static Connection get() throws SQLException{
+                return dataSource.getConnection();
         }
 }
