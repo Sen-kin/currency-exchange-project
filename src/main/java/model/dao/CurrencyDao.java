@@ -1,8 +1,7 @@
 package model.dao;
 
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.entity.CurrencyEntity;
-import lombok.SneakyThrows;
 import util.ConnectionManager;
 
 import java.sql.ResultSet;
@@ -18,7 +17,7 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
 
     @Override
-    public Optional<CurrencyEntity> findByCode(String code) throws DataBaseIsNotAvailibleExeption {
+    public Optional<CurrencyEntity> findByCode(String code) throws DataBaseIsNotAvalibleExeption {
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_BY_CODE)){
 
@@ -28,14 +27,14 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
             return Optional.ofNullable(builder(result));
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvailibleExeption(e);
+            throw new DataBaseIsNotAvalibleExeption(e);
         }
 
     }
 
 
-    @SneakyThrows
-    private CurrencyEntity builder(ResultSet resultSet){
+
+    private CurrencyEntity builder(ResultSet resultSet) throws SQLException{
 
         if (resultSet.getString("Code") == null) return null;
 
