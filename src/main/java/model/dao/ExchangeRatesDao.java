@@ -1,8 +1,8 @@
-package Model.dao;
+package model.dao;
 
-import Model.dto.CurrencyDto;
-import Model.entity.ExchangeRatesDto;
-import jdk.jshell.spi.SPIResolutionException;
+import model.DataBaseIsNotAvailibleExeption;
+import model.dto.CurrencyDto;
+import model.dto.ExchangeRatesDto;
 import lombok.SneakyThrows;
 import util.ConnectionManager;
 
@@ -36,7 +36,7 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
 
 
     @Override
-    public List<ExchangeRatesDto> findAllExchangeRates() {
+    public List<ExchangeRatesDto> findAllExchangeRates() throws DataBaseIsNotAvailibleExeption{
 
         try(var connection = ConnectionManager.get();
             var statement = connection.prepareStatement(FIND_ALL_EXCHANGE_RATES)
@@ -50,12 +50,12 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
             return exchangeRates;
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataBaseIsNotAvailibleExeption(e);
         }
     }
 
     @Override
-    public Optional<ExchangeRatesDto> findExchangeRate(String baseCode, String targetCode) {
+    public Optional<ExchangeRatesDto> findExchangeRate(String baseCode, String targetCode) throws DataBaseIsNotAvailibleExeption{
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_EXCHANGE_RATE_BY_CODES)) {
 
@@ -63,11 +63,12 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
             statement.setString(2, targetCode);
 
         var resultset = statement.executeQuery();
+        if (resultset.getLong("ExchangeId") == 0) return Optional.empty();
 
         return Optional.of(builder(resultset));
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataBaseIsNotAvailibleExeption(e);
         }
     }
 
@@ -100,5 +101,14 @@ public class ExchangeRatesDao implements ExchangeRatesCRUD<String, ExchangeRates
     public static ExchangeRatesDao getInstance() {
         return INSTANCE;
 
+    }
+
+
+    public static void main(String[] args) {
+        try {
+            System.out.println(INSTANCE.findExchangeRate("USD", "EUR"));
+        } catch (DataBaseIsNotAvailibleExeption e) {
+            throw new RuntimeException(e);
+        }
     }
 }
