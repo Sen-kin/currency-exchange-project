@@ -1,11 +1,14 @@
-package Model.dao;
+package model.dao;
 
-import Model.entity.CurrencyEntity;
+import model.CurrencyAlreadyExistExeption;
+import model.DataBaseIsNotAvailibleExeption;
+import model.entity.CurrencyEntity;
 import lombok.SneakyThrows;
 import util.ConnectionManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +25,14 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
             SET Code=?, FullName=?, Sign=?
             WHERE ID=?
             """;
+    private static final String SELECT_ALL_CODES = "SELECT Code FROM Currencies";
+
 
     private CurrenciesDao(){}
 
     @Override
 
-    public List<CurrencyEntity> findAll() {
+    public List<CurrencyEntity> findAll() throws DataBaseIsNotAvailibleExeption {
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_ALL)) {
 
@@ -40,12 +45,12 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
             }
             return currencies;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataBaseIsNotAvailibleExeption(e);
         }
     }
 
     @Override
-    public Optional<CurrencyEntity> findById(Long id) {
+    public Optional<CurrencyEntity> findById(Long id) throws DataBaseIsNotAvailibleExeption {
         try(var connection = ConnectionManager.get();
         var statement = connection.prepareStatement(FIND_BY_ID)){
 
@@ -53,8 +58,9 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
 
             var result = statement.executeQuery();
 
-        return Optional.of(builder(result));} catch (SQLException e) {
-            throw new RuntimeException(e);
+        return Optional.of(builder(result));
+        } catch (SQLException e) {
+            throw new DataBaseIsNotAvailibleExeption(e);
         }
     }
 
@@ -75,9 +81,12 @@ try(var connection = ConnectionManager.get();
     }
 
     @Override
-    public CurrencyEntity save(CurrencyEntity entity) {
+    public Optional<CurrencyEntity> save(CurrencyEntity entity) throws DataBaseIsNotAvailibleExeption, CurrencyAlreadyExistExeption{
         try(var connection = ConnectionManager.get();
-        var statement = connection.prepareStatement(INSERT_CURRENCY)){
+            var statement = connection.prepareStatement(INSERT_CURRENCY, Statement.RETURN_GENERATED_KEYS)
+        ){
+
+        if(INSTANCE.selectAllCodes().contains(entity.getCode())) throw new CurrencyAlreadyExistExeption();
 
         statement.setString(1, entity.getCode());
         statement.setString(2, entity.getFullName());
@@ -85,11 +94,38 @@ try(var connection = ConnectionManager.get();
 
         statement.executeUpdate();
 
-        return entity;
+        var Id = statement.getGeneratedKeys();
+
+
+        if(Id.next()){
+            Long createdCurrencyId = Id.getLong(1);
+            return INSTANCE.findById(createdCurrencyId);
+        }
+
+        } catch (SQLException e) {
+            throw new DataBaseIsNotAvailibleExeption(e);
+        }
+
+        return Optional.empty();
+    }
+
+    private List<String> selectAllCodes(){
+        try(var connection = ConnectionManager.get();
+            var statement = connection.prepareStatement(SELECT_ALL_CODES);
+        ) {
+        var codes = statement.executeQuery();
+
+        List<String> currencyCodes = new ArrayList<>();
+
+        while(codes.next()) currencyCodes.add(codes.getString("Code"));
+
+        return currencyCodes;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     @SneakyThrows
     private CurrencyEntity builder(ResultSet resultSet){
