@@ -7,10 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 public class CurrencyEntity {
 
-    private Long Id;
-    private String Code;
-    private String FullName;
-    private String Sign;
+    private Long id;
+    private String code;
+    private String fullName;
+    private String sign;
 
 
 }
