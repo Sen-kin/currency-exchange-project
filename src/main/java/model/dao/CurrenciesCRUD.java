@@ -10,7 +10,7 @@ public interface CurrenciesCRUD<K, T>{
 
     List<T> findAll() throws DataBaseIsNotAvailibleExeption;
 
-    Optional<T> findById(K id);
+    Optional<T> findById(K id) throws DataBaseIsNotAvailibleExeption;
 
     void update(T entity);
 
