@@ -3,8 +3,9 @@ package controllers;
 import java.io.*;
 
 import model.CurrencyAlreadyExistExeption;
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.dto.CurrencyDto;
+import model.dto.ErrorDto;
 import services.CurrenciesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -22,10 +23,10 @@ public class CurrenciesController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             resp.setContentType("application/json");
-
             mapper.writeValue(resp.getWriter(), currenciesService.findAll());
         } catch (ServiceExeption e) {
-            resp.sendError(500, "Ошибка доступа к базе данных");
+            resp.setStatus(500);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
         }
     }
 
@@ -38,19 +39,20 @@ public class CurrenciesController extends HttpServlet {
             String code = req.getParameter("code").toUpperCase();
             String sign = req.getParameter("sign");
 
-        System.out.println(code + name + sign);
-
-
-            if (code.isEmpty() || name.isEmpty() || sign.isEmpty()) resp.sendError(400, "Отсутствует нужное поле формы");
+            if (code.isEmpty() || name.isEmpty() || sign.isEmpty()){
+                mapper.writeValue(resp.getWriter(), new ErrorDto("Отсутствует нужное поле формы"));
+            }
 
             try {
                CurrencyDto newCurrency = currenciesService.createCurrency(new CurrencyDto(null, code, name, sign));
                 mapper.writeValue(resp.getWriter(), newCurrency);
-                resp.setStatus(201);
             } catch (CurrencyAlreadyExistExeption e){
-                if(!resp.isCommitted()) resp.sendError(409, "Валюта с таким кодом уже существует");
-            } catch (DataBaseIsNotAvailibleExeption e) {
-                if(!resp.isCommitted()) resp.sendError(500, "Ошибка доступа к базе данных");
+                resp.setStatus(409);
+                mapper.writeValue(resp.getWriter(), new ErrorDto("Валюта с таким кодом уже существует"));
+            } catch (DataBaseIsNotAvalibleExeption e) {
+                resp.setStatus(500);
+                mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+
             }
 
     }
