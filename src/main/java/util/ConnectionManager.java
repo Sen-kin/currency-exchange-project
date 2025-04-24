@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class ConnectionManager {
 
@@ -17,9 +18,12 @@ public class ConnectionManager {
         Class.forName("org.sqlite.JDBC");
     }
 
-    @SneakyThrows
         public static Connection get(){
-            return DriverManager.getConnection("jdbc:sqlite:C:\\Users\\User\\IdeaProjects\\currency-exchange\\identifier.sqlite");
+            try {
+                return DriverManager.getConnection("jdbc:sqlite:C:\\Users\\User\\IdeaProjects\\currency-exchange\\identifier.sqlite");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
-    }
+        }
 }
