@@ -1,7 +1,8 @@
 package controllers;
 
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.ExchangeRateIsNotExistExeption;
+import model.dto.ErrorDto;
 import services.ExchangeRatesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -25,20 +26,25 @@ public class ExchangeRateController extends HttpServlet {
             resp.setContentType("application/json");
 
             String path = req.getPathInfo();
-            String baseCode = "";
-            String targetCode = "";
 
-            if(path != null && path.length() == 7){
-                baseCode = path.substring(1, 4);
-                targetCode = path.substring(4,7);
-            } else resp.sendError(400, "Отсутствует нужное поле формы");
+            if(path == null || path.length() != 7){
+                resp.setStatus(400);
+                mapper.writeValue(resp.getWriter(), new ErrorDto("Коды валют пары отсутствуют в адресе"));
+            }
+
+            String baseCode = path.substring(1, 4);
+            String targetCode = path.substring(4,7);
 
             try {
                 mapper.writeValue(resp.getWriter(), exchangeRatesService.findExchangeRateByCodes(baseCode, targetCode));
-            }catch (DataBaseIsNotAvailibleExeption e) {
-                if(!resp.isCommitted()) resp.sendError(500, "Ошибка доступа к базе данных");
+
+            } catch (DataBaseIsNotAvalibleExeption e) {
+                resp.setStatus(500);
+                mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+
             } catch (ExchangeRateIsNotExistExeption e) {
-                if(!resp.isCommitted()) resp.sendError(404, "Обменный курс для пары не найден");
+                resp.setStatus(404);
+                mapper.writeValue(resp.getWriter(), new ErrorDto("Обменный курс для пары не найден"));
             }
     }
 }
