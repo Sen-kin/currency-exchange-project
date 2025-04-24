@@ -1,8 +1,9 @@
 package controllers;
 
-import model.DataBaseIsNotAvailibleExeption;
+import model.DataBaseIsNotAvalibleExeption;
 import model.InvalidCodeExeption;
 import model.dto.CurrencyDto;
+import model.dto.ErrorDto;
 import services.CurrencyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -26,18 +27,22 @@ public class CurrencyController extends HttpServlet {
         resp.setContentType("application/json");
 
         String path = req.getPathInfo();
-        String code = "";
 
-        if  (path == null || path.length() != 4) resp.sendError(400, "Неправильный формат кода валюты(Код валюты должен состоять из 3-х символов");
-                else code = path.substring(1).toUpperCase();
+        if  (path == null || path.length() != 4){
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Код валюты отсутствует в адресе"));
+        }
+
+        String code = path.substring(1).toUpperCase();
+
         try{
             CurrencyDto currency = currencyService.findByCode(code).orElseThrow(InvalidCodeExeption::new);
             mapper.writeValue(resp.getWriter(), currency);
         }catch (InvalidCodeExeption e){
-            if (!resp.isCommitted()) resp.sendError(404, "Валюта не найдена");
-        }catch (DataBaseIsNotAvailibleExeption e){
-            if (!resp.isCommitted()) resp.sendError(500, "Ошибка доступа к базе данных");
+            if (!resp.isCommitted()) mapper.writeValue(resp.getWriter(), new ErrorDto("Валюта не найдена"));
+        }catch (DataBaseIsNotAvalibleExeption e){
+            if (!resp.isCommitted()) mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
         }
+
     }
 
 }
