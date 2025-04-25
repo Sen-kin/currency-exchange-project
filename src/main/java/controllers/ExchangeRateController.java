@@ -36,7 +36,7 @@ public class ExchangeRateController extends HttpServlet {
             String targetCode = path.substring(4,7);
 
             try {
-                mapper.writeValue(resp.getWriter(), exchangeRatesService.findExchangeRateByCodes(baseCode, targetCode));
+                mapper.writeValue(resp.getWriter(), exchangeRatesService.findExchangeRate(baseCode, targetCode));
 
             } catch (DataBaseIsNotAvalibleExeption e) {
                 resp.setStatus(500);
