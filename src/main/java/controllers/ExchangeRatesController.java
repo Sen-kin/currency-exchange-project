@@ -1,6 +1,8 @@
 package controllers;
 
 import model.DataBaseIsNotAvalibleExeption;
+import model.ExchangeRateAlreadyExistExeption;
+import model.ExchangeRateCodeDoesNotExistExeption;
 import model.dto.ErrorDto;
 import services.ExchangeRatesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,14 +41,26 @@ public class ExchangeRatesController extends HttpServlet {
         String baseCurrencyCode = req.getParameter("baseCurrencyCode");
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         String rateStringValue = req.getParameter("rate");
-        Double rate = null;
 
-        if(rateStringValue.matches("^\\d+$")){
-             rate = Double.parseDouble(rateStringValue);
+
+        if (baseCurrencyCode.isEmpty() || targetCurrencyCode.isEmpty() || rateStringValue.isEmpty() || !rateStringValue.matches("^(\\d+(\\.\\d*)?|\\.\\d+)$")) {
+            resp.setStatus(400);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Отсутствует нужное поле формы"));
         }
 
-        if (baseCurrencyCode.isEmpty() || targetCurrencyCode.isEmpty() || rateStringValue.isEmpty()){
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Отсутствует нужное поле формы"));
+        Double rate = Double.parseDouble(rateStringValue);
+        
+        try {
+            mapper.writeValue(resp.getWriter(), exchangeRatesService.createExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
+        } catch (ExchangeRateAlreadyExistExeption e) {
+            resp.setStatus(409);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Валютная пара с таким кодом уже существует"));
+        } catch (DataBaseIsNotAvalibleExeption e) {
+            resp.setStatus(500);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+        } catch (ExchangeRateCodeDoesNotExistExeption e) {
+            resp.setStatus(404);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Одна (или обе) валюта из валютной пары не существует в БД"));
         }
     }
 }
