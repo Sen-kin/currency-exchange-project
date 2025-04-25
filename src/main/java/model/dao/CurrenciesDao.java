@@ -109,7 +109,7 @@ try(var connection = ConnectionManager.get();
         return Optional.empty();
     }
 
-    private List<String> selectAllCodes(){
+    public List<String> selectAllCodes(){
         try(var connection = ConnectionManager.get();
             var statement = connection.prepareStatement(SELECT_ALL_CODES);
         ) {
