@@ -1,8 +1,9 @@
 package controllers;
 
-import model.DataBaseIsNotAvalibleExeption;
-import model.ExchangeRateAlreadyExistExeption;
-import model.ExchangeRateCodeDoesNotExistExeption;
+import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.ExchangeRateAlreadyExistsException;
+import model.exceptions.ExchangeRateCodeDoesNotExistException;
+import model.exceptions.ExchangeRateCreationException;
 import model.dto.ErrorDto;
 import services.ExchangeRatesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +30,7 @@ public class ExchangeRatesController extends HttpServlet {
 
         try {
             mapper.writeValue(resp.getWriter(), exchangeRatesService.findAllExchangeRates());
-        } catch (DataBaseIsNotAvalibleExeption e) {
+        } catch (DataBaseIsNotAvalibleException e) {
             mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
         }
     }
@@ -49,20 +50,25 @@ public class ExchangeRatesController extends HttpServlet {
         }
 
         Double rate = Double.parseDouble(rateStringValue);
-        
+
         try {
             mapper.writeValue(resp.getWriter(), exchangeRatesService.createExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
-        } catch (ExchangeRateAlreadyExistExeption e) {
+        } catch (ExchangeRateAlreadyExistsException e) {
             resp.setStatus(409);
             mapper.writeValue(resp.getWriter(), new ErrorDto("Валютная пара с таким кодом уже существует"));
-        } catch (DataBaseIsNotAvalibleExeption e) {
+        } catch (DataBaseIsNotAvalibleException e) {
             resp.setStatus(500);
             mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
-        } catch (ExchangeRateCodeDoesNotExistExeption e) {
+        } catch (ExchangeRateCodeDoesNotExistException e) {
             resp.setStatus(404);
             mapper.writeValue(resp.getWriter(), new ErrorDto("Одна (или обе) валюта из валютной пары не существует в БД"));
+        } catch (ExchangeRateCreationException e) {
+            resp.setStatus(400);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Отсутствует нужное поле формы"));
         }
     }
+
+
 }
 
 
