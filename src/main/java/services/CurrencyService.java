@@ -1,11 +1,10 @@
 package services;
 
-import model.DataBaseIsNotAvalibleExeption;
-import model.InvalidCodeExeption;
+import model.exceptions.CurrencyDoesNotExistException;
+import model.exceptions.DataBaseIsNotAvalibleException;
 import model.dao.CurrencyDao;
 import model.dto.CurrencyDto;
-
-import java.util.Optional;
+import model.entity.CurrencyEntity;
 
 public class CurrencyService {
 
@@ -16,16 +15,16 @@ public class CurrencyService {
     private CurrencyService(){}
 
 
-    public Optional<CurrencyDto> findByCode(String code) throws InvalidCodeExeption, DataBaseIsNotAvalibleExeption {
+    public CurrencyDto findByCode(String code) throws DataBaseIsNotAvalibleException, CurrencyDoesNotExistException {
 
-    return currencyDao.findByCode(code)
-            .map(dao -> new CurrencyDto(
-                    dao.getId(),
-                    dao.getCode(),
-                    dao.getFullName(),
-                    dao.getSign()
-            ));
+            CurrencyEntity currency = currencyDao.findByCode(code);
 
+            return new CurrencyDto(
+                            currency.getId(),
+                            currency.getCode(),
+                            currency.getName(),
+                            currency.getSign()
+            );
     }
 
     public static CurrencyService getInstance() {
