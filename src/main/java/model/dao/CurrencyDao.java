@@ -1,12 +1,14 @@
 package model.dao;
 
-import model.DataBaseIsNotAvalibleExeption;
+import model.exceptions.CurrencyDoesNotExistException;
+import model.exceptions.DataBaseIsNotAvalibleException;
 import model.entity.CurrencyEntity;
 import util.ConnectionManager;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
 public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
@@ -17,17 +19,25 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
 
     @Override
-    public Optional<CurrencyEntity> findByCode(String code) throws DataBaseIsNotAvalibleExeption {
-        try(var connection = ConnectionManager.get();
-        var statement = connection.prepareStatement(FIND_BY_CODE)){
+    public CurrencyEntity findByCode(String code) throws DataBaseIsNotAvalibleException, CurrencyDoesNotExistException {
+        try(
+                Connection connection = ConnectionManager.get();
+                PreparedStatement statement = connection.prepareStatement(FIND_BY_CODE)
+        ) {
 
             statement.setString(1, code);
 
-            var result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
-            return Optional.ofNullable(builder(result));
+            if (result.getString("Code") == null)
+            {
+                throw new CurrencyDoesNotExistException();
+            }
+
+            return builder(result);
+
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvalibleExeption(e);
+            throw new DataBaseIsNotAvalibleException(e);
         }
 
     }
@@ -35,15 +45,12 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
 
     private CurrencyEntity builder(ResultSet resultSet) throws SQLException{
-
-        if (resultSet.getString("Code") == null) return null;
-
         return new CurrencyEntity(
                     resultSet.getLong("ID"),
                     resultSet.getString("Code"),
                     resultSet.getString("FullName"),
                     resultSet.getString("Sign")
-    );
+        );
 
     }
 
