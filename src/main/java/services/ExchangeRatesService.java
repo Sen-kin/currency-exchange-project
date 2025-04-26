@@ -1,39 +1,53 @@
 package services;
 
-import model.DataBaseIsNotAvalibleExeption;
-import model.ExchangeRateAlreadyExistExeption;
-import model.ExchangeRateCodeDoesNotExistExeption;
-import model.ExchangeRateIsNotExistExeption;
-import model.dao.ExchangeRatesDao;
+import model.dao.ExchangeRateDao;
 import model.dto.CurrencyDto;
-import model.dto.ExchangeRatesDto;
+import model.dto.ExchangeRateDto;
+import model.exceptions.*;
 
 import java.util.List;
 
 public class ExchangeRatesService {
 
-    private static final ExchangeRatesDao exchangeRatesDao = ExchangeRatesDao.getInstance();
+    private static final ExchangeRateDao exchangeRatesDao = ExchangeRateDao.getInstance();
 
     private static final ExchangeRatesService INSTANCE = new ExchangeRatesService();
 
     private ExchangeRatesService() {}
 
 
-    public List<ExchangeRatesDto> findAllExchangeRates() throws DataBaseIsNotAvalibleExeption {
-        return exchangeRatesDao.findAllExchangeRates();
+    public List<ExchangeRateDto> findAllExchangeRates() throws DataBaseIsNotAvalibleException {
+        return exchangeRatesDao.findAll();
     }
 
-    public ExchangeRatesDto findExchangeRate(String baseCode, String targetCode)
-            throws DataBaseIsNotAvalibleExeption, ExchangeRateIsNotExistExeption {
+    public ExchangeRateDto findExchangeRate(String baseCode, String targetCode)
+            throws DataBaseIsNotAvalibleException, ExchangeRateDoesNotExistException {
 
-        return exchangeRatesDao.findExchangeRate(baseCode, targetCode).orElseThrow(ExchangeRateIsNotExistExeption::new);
+        return exchangeRatesDao.findByCodes(baseCode, targetCode);
     }
 
-    public ExchangeRatesDto createExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate) throws DataBaseIsNotAvalibleExeption, ExchangeRateAlreadyExistExeption, ExchangeRateCodeDoesNotExistExeption {
-        return exchangeRatesDao.createExchangeRate(new ExchangeRatesDto(null,
+    public ExchangeRateDto createExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate)
+            throws DataBaseIsNotAvalibleException, ExchangeRateAlreadyExistsException, ExchangeRateCodeDoesNotExistException, ExchangeRateCreationException {
+
+        return exchangeRatesDao.create(
+                new ExchangeRateDto(
+                        null,
+                        new CurrencyDto(null, baseCurrencyCode, null, null),
+                        new CurrencyDto(null, targetCurrencyCode, null, null),
+                        rate
+                )
+        );
+    }
+
+    public ExchangeRateDto updateExchangeRate(Double rate, String baseCurrencyCode, String targetCurrencyCode)
+            throws DataBaseIsNotAvalibleException, ExchangeRateDoesNotExistException {
+        return exchangeRatesDao.update(new ExchangeRateDto(
+                null,
                 new CurrencyDto(null, baseCurrencyCode, null, null),
                 new CurrencyDto(null, targetCurrencyCode, null, null),
-                rate)).orElseThrow(ExchangeRateAlreadyExistExeption::new);
+                rate
+                )
+        );
     }
 
 
