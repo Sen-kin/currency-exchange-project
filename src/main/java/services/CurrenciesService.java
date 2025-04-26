@@ -1,13 +1,13 @@
 package services;
 
-import model.CurrencyAlreadyExistExeption;
-import model.DataBaseIsNotAvalibleExeption;
+import model.exceptions.CurrencyAlreadyExistsException;
+import model.exceptions.CurrencyCreationException;
+import model.exceptions.DataBaseIsNotAvalibleException;
 import model.dto.CurrencyDto;
 import model.dao.CurrenciesDao;
 import model.entity.CurrencyEntity;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CurrenciesService {
@@ -18,44 +18,37 @@ public class CurrenciesService {
 
     private CurrenciesService(){}
 
-    public List<CurrencyDto> findAll() throws ServiceExeption{
-        try {
+    public List<CurrencyDto> findAll() throws DataBaseIsNotAvalibleException {
             return currenciesDao
                     .findAll()
                     .stream()
                     .map(dao -> new CurrencyDto(
                                     dao.getId(),
                                     dao.getCode(),
-                                    dao.getFullName(),
+                                    dao.getName(),
                                     dao.getSign()
                             )
                     )
                     .collect(Collectors.toList());
-        } catch (DataBaseIsNotAvalibleExeption e) {
-            throw new ServiceExeption(e);
-        }
+
     }
 
-    public CurrencyDto createCurrency(CurrencyDto currencyDto) throws DataBaseIsNotAvalibleExeption, CurrencyAlreadyExistExeption {
+    public CurrencyDto createCurrency(CurrencyDto currencyDto) throws DataBaseIsNotAvalibleException, CurrencyAlreadyExistsException, CurrencyCreationException {
 
-        Optional<CurrencyEntity> createdEntity = currenciesDao.save(
-                new CurrencyEntity(currencyDto.id(),
+        CurrencyEntity createdCurrency = currenciesDao.create(
+                new CurrencyEntity(
+                        currencyDto.id(),
                         currencyDto.code(),
                         currencyDto.name(),
                         currencyDto.sign()
                 ));
 
-        if (createdEntity.isPresent()) {
-
-            CurrencyEntity newCurrency = createdEntity.get();
             return new CurrencyDto(
-                    newCurrency.getId(),
-                    newCurrency.getCode(),
-                    newCurrency.getFullName(),
-                    newCurrency.getSign()
+                    createdCurrency.getId(),
+                    createdCurrency.getCode(),
+                    createdCurrency.getName(),
+                    createdCurrency.getSign()
             );
-        }
-        return new CurrencyDto(null, "", "", "");
     }
 
     public static CurrenciesService getInstance() {
