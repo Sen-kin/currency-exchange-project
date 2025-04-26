@@ -5,7 +5,6 @@ import model.exceptions.DataBaseIsNotAvalibleException;
 import model.dto.CurrencyDto;
 import model.dto.ErrorDto;
 import services.CurrencyService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,7 +16,7 @@ import java.io.IOException;
 @WebServlet("/currency/*")
 public class CurrencyController extends HttpServlet {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final JsonMapper mapper = JsonMapper.getInstance();
 
     private final CurrencyService currencyService = CurrencyService.getInstance();
 
@@ -30,7 +29,7 @@ public class CurrencyController extends HttpServlet {
 
         if  (path == null || path.length() != 4)
         {
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Код валюты отсутствует в адресе"));
+            mapper.responseToJson(resp, new ErrorDto("Код валюты отсутствует в адресе"));
         }
 
         String code = path.substring(1).toUpperCase();
@@ -38,17 +37,17 @@ public class CurrencyController extends HttpServlet {
         try{
             CurrencyDto currency = currencyService.findByCode(code);
 
-            mapper.writeValue(resp.getWriter(), currency);
+            mapper.responseToJson(resp, currency);
 
         } catch (CurrencyDoesNotExistException e){
 
             resp.setStatus(404);
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Валюта не найдена"));
+            mapper.responseToJson(resp, new ErrorDto("Валюта не найдена"));
 
         } catch (DataBaseIsNotAvalibleException e){
 
             resp.setStatus(500);
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
 
         }
 

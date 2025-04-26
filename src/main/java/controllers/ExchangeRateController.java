@@ -4,7 +4,6 @@ import model.exceptions.DataBaseIsNotAvalibleException;
 import model.exceptions.ExchangeRateDoesNotExistException;
 import model.dto.ErrorDto;
 import services.ExchangeRatesService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,7 +17,7 @@ public class ExchangeRateController extends HttpServlet {
 
         private static final ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
 
-        private static final ObjectMapper mapper = new ObjectMapper();
+        private static final JsonMapper mapper = JsonMapper.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,22 +28,22 @@ public class ExchangeRateController extends HttpServlet {
 
             if(path == null || path.length() != 7){
                 resp.setStatus(400);
-                mapper.writeValue(resp.getWriter(), new ErrorDto("Коды валют пары отсутствуют в адресе"));
+                mapper.responseToJson(resp, new ErrorDto("Коды валют пары отсутствуют в адресе"));
             }
 
             String baseCode = path.substring(1, 4);
             String targetCode = path.substring(4,7);
 
             try {
-                mapper.writeValue(resp.getWriter(), exchangeRatesService.findExchangeRate(baseCode, targetCode));
+                mapper.responseToJson(resp, exchangeRatesService.findExchangeRate(baseCode, targetCode));
 
             } catch (DataBaseIsNotAvalibleException e) {
                 resp.setStatus(500);
-                mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+                mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
 
             } catch (ExchangeRateDoesNotExistException e) {
                 resp.setStatus(404);
-                mapper.writeValue(resp.getWriter(), new ErrorDto("Обменный курс для пары не найден"));
+                mapper.responseToJson(resp, new ErrorDto("Обменный курс для пары не найден"));
             }
     }
 
@@ -63,19 +62,19 @@ public class ExchangeRateController extends HttpServlet {
 
         if (!rateStringValue.matches("^(\\d+(\\.\\d*)?|\\.\\d+)$")){
             resp.setStatus(400);
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Отсутствует нужное поле формы"));
+            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
         }
 
         Double rate = Double.parseDouble(rateStringValue);
 
         try{
-            mapper.writeValue(resp.getWriter(), exchangeRatesService.updateExchangeRate(rate, baseCurrencyCode, targetCurrencyCode));
+            mapper.responseToJson(resp, exchangeRatesService.updateExchangeRate(rate, baseCurrencyCode, targetCurrencyCode));
         }catch (DataBaseIsNotAvalibleException e) {
             resp.setStatus(500);
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }catch (ExchangeRateDoesNotExistException e) {
             resp.setStatus(404);
-            mapper.writeValue(resp.getWriter(), new ErrorDto("Валютная пара отсутствует в базе данных"));
+            mapper.responseToJson(resp, new ErrorDto("Валютная пара отсутствует в базе данных"));
         }
 
     }
