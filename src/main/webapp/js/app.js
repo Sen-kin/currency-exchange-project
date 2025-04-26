@@ -67,7 +67,7 @@ $(document).ready(function() {
 
         $.ajax({
             url: `${host}/currencies`,
-            type: " POST",
+            type: "POST",
             data: $("#add-currency").serialize(),
             success: function(data) {
                 requestCurrencies();
