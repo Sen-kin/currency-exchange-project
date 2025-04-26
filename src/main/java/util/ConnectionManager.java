@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.experimental.UtilityClass;
 
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -18,6 +19,11 @@ public class ConnectionManager {
         static {
             config.setJdbcUrl("jdbc:sqlite:C:\\Users\\User\\IdeaProjects\\currency-exchange\\identifier.sqlite");
             config.setDriverClassName("org.sqlite.JDBC");
+            config.setMaximumPoolSize(20);
+            config.setConnectionTimeout(5000);
+            config.setIdleTimeout(60000);
+            config.setMaxLifetime(1800000);
+            config.setMinimumIdle(5);
             dataSource = new HikariDataSource(config);
         }
 
