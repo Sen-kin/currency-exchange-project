@@ -1,18 +1,18 @@
 package model.dao;
 
-import model.CurrencyAlreadyExistExeption;
-import model.DataBaseIsNotAvalibleExeption;
+import model.exceptions.CurrencyAlreadyExistsException;
+import model.exceptions.CurrencyCreationException;
+import model.exceptions.CurrencyDoesNotExistException;
+import model.exceptions.DataBaseIsNotAvalibleException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CurrenciesCRUD<K, T>{
 
-    List<T> findAll() throws DataBaseIsNotAvalibleExeption;
+    T create(T entity) throws DataBaseIsNotAvalibleException, CurrencyAlreadyExistsException, CurrencyCreationException;
 
-    Optional<T> findById(K id) throws DataBaseIsNotAvalibleExeption;
+    List<T> findAll() throws DataBaseIsNotAvalibleException;
 
-    void update(T entity);
+    T findById(K id) throws DataBaseIsNotAvalibleException, CurrencyDoesNotExistException;
 
-    Optional<T> save(T entity) throws DataBaseIsNotAvalibleExeption, CurrencyAlreadyExistExeption;
 }

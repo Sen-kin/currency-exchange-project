@@ -1,11 +1,9 @@
 package model.dao;
 
-import model.DataBaseIsNotAvalibleExeption;
-import model.InvalidCodeExeption;
-
-import java.util.Optional;
+import model.exceptions.CurrencyDoesNotExistException;
+import model.exceptions.DataBaseIsNotAvalibleException;
 
 public interface CurrencyCRUD<K, T> {
 
-    Optional<T> findByCode(K code) throws InvalidCodeExeption, DataBaseIsNotAvalibleExeption;
+    T findByCode(K code) throws CurrencyDoesNotExistException, DataBaseIsNotAvalibleException;
 }
