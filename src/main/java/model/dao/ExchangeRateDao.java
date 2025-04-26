@@ -87,7 +87,7 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
 
             ResultSet resultset = statement.executeQuery();
 
-            if (resultset.getLong("ExchangeId") == 0){
+            if (!resultset.next()){
                 throw new ExchangeRateDoesNotExistException();
             }
 
