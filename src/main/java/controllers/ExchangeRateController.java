@@ -1,7 +1,7 @@
 package controllers;
 
-import model.DataBaseIsNotAvalibleExeption;
-import model.ExchangeRateIsNotExistExeption;
+import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.ExchangeRateDoesNotExistException;
 import model.dto.ErrorDto;
 import services.ExchangeRatesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,13 +38,46 @@ public class ExchangeRateController extends HttpServlet {
             try {
                 mapper.writeValue(resp.getWriter(), exchangeRatesService.findExchangeRate(baseCode, targetCode));
 
-            } catch (DataBaseIsNotAvalibleExeption e) {
+            } catch (DataBaseIsNotAvalibleException e) {
                 resp.setStatus(500);
                 mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
 
-            } catch (ExchangeRateIsNotExistExeption e) {
+            } catch (ExchangeRateDoesNotExistException e) {
                 resp.setStatus(404);
                 mapper.writeValue(resp.getWriter(), new ErrorDto("Обменный курс для пары не найден"));
             }
     }
+
+    @Override
+    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+
+        String path = req.getPathInfo();
+
+        String baseCurrencyCode = path.substring(1, 4);
+        String targetCurrencyCode = path.substring(4, 7);
+        String rateStringValue = req.getParameter("rate");
+
+        System.out.println(rateStringValue);
+
+        if (!rateStringValue.matches("^(\\d+(\\.\\d*)?|\\.\\d+)$")){
+            resp.setStatus(400);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Отсутствует нужное поле формы"));
+        }
+
+        Double rate = Double.parseDouble(rateStringValue);
+
+        try{
+            mapper.writeValue(resp.getWriter(), exchangeRatesService.updateExchangeRate(rate, baseCurrencyCode, targetCurrencyCode));
+        }catch (DataBaseIsNotAvalibleException e) {
+            resp.setStatus(500);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+        }catch (ExchangeRateDoesNotExistException e) {
+            resp.setStatus(404);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Валютная пара отсутствует в базе данных"));
+        }
+
+    }
+
 }
