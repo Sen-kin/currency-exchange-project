@@ -1,7 +1,7 @@
 package controllers;
 
-import model.DataBaseIsNotAvalibleExeption;
-import model.InvalidCodeExeption;
+import model.exceptions.CurrencyDoesNotExistException;
+import model.exceptions.DataBaseIsNotAvalibleException;
 import model.dto.CurrencyDto;
 import model.dto.ErrorDto;
 import services.CurrencyService;
@@ -28,19 +28,28 @@ public class CurrencyController extends HttpServlet {
 
         String path = req.getPathInfo();
 
-        if  (path == null || path.length() != 4){
+        if  (path == null || path.length() != 4)
+        {
             mapper.writeValue(resp.getWriter(), new ErrorDto("Код валюты отсутствует в адресе"));
         }
 
         String code = path.substring(1).toUpperCase();
 
         try{
-            CurrencyDto currency = currencyService.findByCode(code).orElseThrow(InvalidCodeExeption::new);
+            CurrencyDto currency = currencyService.findByCode(code);
+
             mapper.writeValue(resp.getWriter(), currency);
-        }catch (InvalidCodeExeption e){
-            if (!resp.isCommitted()) mapper.writeValue(resp.getWriter(), new ErrorDto("Валюта не найдена"));
-        }catch (DataBaseIsNotAvalibleExeption e){
-            if (!resp.isCommitted()) mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+
+        } catch (CurrencyDoesNotExistException e){
+
+            resp.setStatus(404);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Валюта не найдена"));
+
+        } catch (DataBaseIsNotAvalibleException e){
+
+            resp.setStatus(500);
+            mapper.writeValue(resp.getWriter(), new ErrorDto("Ошибка доступа к базе данных"));
+
         }
 
     }
