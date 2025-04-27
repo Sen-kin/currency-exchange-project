@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
     const host = "http://localhost:8080/currency_exchange"
 
@@ -94,7 +95,7 @@ $(document).ready(function() {
                 tbody.empty();
                 $.each(response, function(index, rate) {
                     const row = $('<tr></tr>');
-                    const currency = `${rate.baseCurrency.code} → ${rate.targetCurrency.code}`; // USD → RUB
+                    const currency = rate.baseCurrency.code + rate.targetCurrency.code;
                     const exchangeRate = rate.rate;
                     row.append($('<td></td>').text(currency));
                     row.append($('<td></td>').text(exchangeRate));
@@ -118,11 +119,8 @@ $(document).ready(function() {
     requestExchangeRates();
 
     $(document).delegate('.exchange-rate-edit', 'click', function() {
-        // Получаем отображаемую пару (с разделителем)
-        const displayedPair = $(this).closest('tr').find('td:first').text();
-        // Удаляем разделитель для сервера
-        const pair = displayedPair.replace(/ → /g, ''); // USDRUB
-
+        // Get the currency and exchange rate from the row
+        const pair = $(this).closest('tr').find('td:first').text();
         const exchangeRate = $(this).closest('tr').find('td:eq(1)').text();
 
         // insert values into the modal
@@ -132,13 +130,13 @@ $(document).ready(function() {
 
     // add event handler for edit exchange rate modal "Save" button
     $('#edit-exchange-rate-modal .btn-primary').click(function() {
-        const displayedPair = $('#edit-exchange-rate-modal .modal-title').text()
-            .replace('Edit ', '')
-            .replace(' Exchange Rate', '');
+        // get the currency pair and exchange rate from the modal
+        const pair = $('#edit-exchange-rate-modal .modal-title').text().replace('Edit ', '').replace(' Exchange Rate', '');
+        const exchangeRate = $('#edit-exchange-rate-modal #exchange-rate-input').val();
 
-        // Удаляем разделитель для сервера
-        const pair = displayedPair.replace(/ → /g, '');
-
+        // set changed values to the table row
+        const row = $(`tr:contains(${pair})`);
+        row.find('td:eq(1)').text(exchangeRate);
 
         // send values to the server with a patch request
         $.ajax({
@@ -147,8 +145,7 @@ $(document).ready(function() {
             contentType : "application/x-www-form-urlencoded",
             data: `rate=${exchangeRate}`,
             success: function() {
-                const row = $(`tr:contains("${displayedPair}")`);
-                row.find('td:eq(1)').text(exchangeRate);
+
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 const error = JSON.parse(jqXHR.responseText);
