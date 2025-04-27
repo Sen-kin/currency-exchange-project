@@ -9,12 +9,12 @@ public class JsonMapper {
 
     private static final JsonMapper INSTANCE = new JsonMapper();
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private JsonMapper() {}
 
     public void responseToJson(HttpServletResponse resp, Object responseDto) throws IOException {
-        mapper.writeValue(resp.getWriter(), responseDto);
+        MAPPER.writeValue(resp.getWriter(), responseDto);
     }
 
     public static JsonMapper getInstance() {
