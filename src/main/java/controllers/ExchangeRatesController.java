@@ -1,12 +1,12 @@
 package controllers;
 
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.exceptions.ExchangeRateAlreadyExistsException;
 import model.exceptions.ExchangeRateCodeDoesNotExistException;
 import model.exceptions.ExchangeRateCreationException;
 import model.dto.ErrorDto;
+import org.apache.commons.lang3.StringUtils;
 import services.ExchangeRatesService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,7 +30,7 @@ public class ExchangeRatesController extends HttpServlet {
 
         try {
             mapper.responseToJson(resp, exchangeRatesService.findAllExchangeRates());
-        } catch (DataBaseIsNotAvalibleException e) {
+        } catch (DataBaseIsNotAvailableException e) {
             mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }
     }
@@ -44,9 +44,10 @@ public class ExchangeRatesController extends HttpServlet {
         String rateStringValue = req.getParameter("rate");
 
 
-        if (baseCurrencyCode.isEmpty() || targetCurrencyCode.isEmpty() || rateStringValue.isEmpty() || !rateStringValue.matches("^(\\d+(\\.\\d*)?|\\.\\d+)$")) {
+        if (StringUtils.isEmpty(baseCurrencyCode) || StringUtils.isEmpty(targetCurrencyCode) || StringUtils.isEmpty(rateStringValue) || !StringUtils.isNumeric(rateStringValue)) {
             resp.setStatus(400);
             mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            return;
         }
 
         Double rate = Double.parseDouble(rateStringValue);
@@ -56,7 +57,7 @@ public class ExchangeRatesController extends HttpServlet {
         } catch (ExchangeRateAlreadyExistsException e) {
             resp.setStatus(409);
             mapper.responseToJson(resp, new ErrorDto("Валютная пара с таким кодом уже существует"));
-        } catch (DataBaseIsNotAvalibleException e) {
+        } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
             mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         } catch (ExchangeRateCodeDoesNotExistException e) {
