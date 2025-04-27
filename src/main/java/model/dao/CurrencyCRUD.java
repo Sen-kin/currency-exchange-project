@@ -1,9 +1,9 @@
 package model.dao;
 
 import model.exceptions.CurrencyDoesNotExistException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 
 public interface CurrencyCRUD<K, T> {
 
-    T findByCode(K code) throws CurrencyDoesNotExistException, DataBaseIsNotAvalibleException;
+    T findByCode(K code) throws CurrencyDoesNotExistException, DataBaseIsNotAvailableException;
 }

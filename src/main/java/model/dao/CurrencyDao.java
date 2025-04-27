@@ -1,7 +1,7 @@
 package model.dao;
 
 import model.exceptions.CurrencyDoesNotExistException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.entity.CurrencyEntity;
 import util.ConnectionManager;
 
@@ -19,7 +19,7 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
 
     @Override
-    public CurrencyEntity findByCode(String code) throws DataBaseIsNotAvalibleException, CurrencyDoesNotExistException {
+    public CurrencyEntity findByCode(String code) throws DataBaseIsNotAvailableException, CurrencyDoesNotExistException {
         try(
                 Connection connection = ConnectionManager.get();
                 PreparedStatement statement = connection.prepareStatement(FIND_BY_CODE)
@@ -37,7 +37,7 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
             return builder(result);
 
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvalibleException(e);
+            throw new DataBaseIsNotAvailableException(e);
         }
 
     }

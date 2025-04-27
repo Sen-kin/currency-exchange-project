@@ -3,7 +3,7 @@ package model.dao;
 import model.exceptions.CurrencyAlreadyExistsException;
 import model.exceptions.CurrencyCreationException;
 import model.exceptions.CurrencyDoesNotExistException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.entity.CurrencyEntity;
 import util.ConnectionManager;
 
@@ -27,7 +27,7 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
     private CurrenciesDao(){}
 
     @Override
-    public List<CurrencyEntity> findAll() throws DataBaseIsNotAvalibleException {
+    public List<CurrencyEntity> findAll() throws DataBaseIsNotAvailableException {
         try(
                 Connection connection = ConnectionManager.get();
             PreparedStatement statement = connection.prepareStatement(FIND_ALL)
@@ -42,12 +42,12 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
 
             return currencies;
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvalibleException(e);
+            throw new DataBaseIsNotAvailableException(e);
         }
     }
 
     @Override
-    public CurrencyEntity findById(Long id) throws DataBaseIsNotAvalibleException, CurrencyDoesNotExistException {
+    public CurrencyEntity findById(Long id) throws DataBaseIsNotAvailableException, CurrencyDoesNotExistException {
         try(
                 Connection connection = ConnectionManager.get();
         PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)
@@ -61,12 +61,12 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
                 return builder(result);
 
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvalibleException(e);
+            throw new DataBaseIsNotAvailableException(e);
         }
     }
 
     @Override
-    public CurrencyEntity create(CurrencyEntity entity) throws DataBaseIsNotAvalibleException, CurrencyAlreadyExistsException, CurrencyCreationException {
+    public CurrencyEntity create(CurrencyEntity entity) throws DataBaseIsNotAvailableException, CurrencyAlreadyExistsException, CurrencyCreationException {
         try(
                 Connection connection = ConnectionManager.get();
             PreparedStatement statement = connection.prepareStatement(CREATE_CURRENCY, Statement.RETURN_GENERATED_KEYS)
@@ -91,13 +91,13 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
             return INSTANCE.findById(ID.getLong(1));
 
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvalibleException(e);
+            throw new DataBaseIsNotAvailableException(e);
         } catch (CurrencyDoesNotExistException e) {
             throw new CurrencyCreationException();
         }
     }
 
-    public List<String> selectAllCodes() throws DataBaseIsNotAvalibleException{
+    public List<String> selectAllCodes() throws DataBaseIsNotAvailableException {
         try(Connection connection = ConnectionManager.get();
             PreparedStatement statement = connection.prepareStatement(SELECT_ALL_CODES)
         ) {
@@ -112,7 +112,7 @@ public class CurrenciesDao implements CurrenciesCRUD<Long, CurrencyEntity> {
             return currencyCodes;
 
         } catch (SQLException e) {
-            throw new DataBaseIsNotAvalibleException(e);
+            throw new DataBaseIsNotAvailableException(e);
         }
     }
 

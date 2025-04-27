@@ -1,7 +1,7 @@
 package services;
 
 import model.exceptions.CurrencyDoesNotExistException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.dao.CurrencyDao;
 import model.dto.CurrencyDto;
 import model.entity.CurrencyEntity;
@@ -15,7 +15,7 @@ public class CurrencyService {
     private CurrencyService(){}
 
 
-    public CurrencyDto findByCode(String code) throws DataBaseIsNotAvalibleException, CurrencyDoesNotExistException {
+    public CurrencyDto findByCode(String code) throws DataBaseIsNotAvailableException, CurrencyDoesNotExistException {
 
             CurrencyEntity currency = currencyDao.findByCode(code);
 

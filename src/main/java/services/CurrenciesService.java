@@ -2,7 +2,7 @@ package services;
 
 import model.exceptions.CurrencyAlreadyExistsException;
 import model.exceptions.CurrencyCreationException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.dto.CurrencyDto;
 import model.dao.CurrenciesDao;
 import model.entity.CurrencyEntity;
@@ -18,7 +18,7 @@ public class CurrenciesService {
 
     private CurrenciesService(){}
 
-    public List<CurrencyDto> findAll() throws DataBaseIsNotAvalibleException {
+    public List<CurrencyDto> findAll() throws DataBaseIsNotAvailableException {
             return currenciesDao
                     .findAll()
                     .stream()
@@ -33,7 +33,7 @@ public class CurrenciesService {
 
     }
 
-    public CurrencyDto createCurrency(CurrencyDto currencyDto) throws DataBaseIsNotAvalibleException, CurrencyAlreadyExistsException, CurrencyCreationException {
+    public CurrencyDto createCurrency(CurrencyDto currencyDto) throws DataBaseIsNotAvailableException, CurrencyAlreadyExistsException, CurrencyCreationException {
 
         CurrencyEntity createdCurrency = currenciesDao.create(
                 new CurrencyEntity(

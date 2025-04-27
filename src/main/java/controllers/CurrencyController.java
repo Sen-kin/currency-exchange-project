@@ -1,7 +1,7 @@
 package controllers;
 
 import model.exceptions.CurrencyDoesNotExistException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.dto.CurrencyDto;
 import model.dto.ErrorDto;
 import services.CurrencyService;
@@ -44,7 +44,7 @@ public class CurrencyController extends HttpServlet {
             resp.setStatus(404);
             mapper.responseToJson(resp, new ErrorDto("Валюта не найдена"));
 
-        } catch (DataBaseIsNotAvalibleException e){
+        } catch (DataBaseIsNotAvailableException e){
 
             resp.setStatus(500);
             mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));

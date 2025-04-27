@@ -1,8 +1,9 @@
 package controllers;
 
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.exceptions.ExchangeRateDoesNotExistException;
 import model.dto.ErrorDto;
+import org.apache.commons.lang3.StringUtils;
 import services.ExchangeRatesService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -37,7 +38,7 @@ public class ExchangeRateController extends HttpServlet {
             try {
                 mapper.responseToJson(resp, exchangeRatesService.findExchangeRate(baseCode, targetCode));
 
-            } catch (DataBaseIsNotAvalibleException e) {
+            } catch (DataBaseIsNotAvailableException e) {
                 resp.setStatus(500);
                 mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
 
@@ -59,7 +60,7 @@ public class ExchangeRateController extends HttpServlet {
         String rateStringValue = req.getParameter("rate");
 
 
-        if (!rateStringValue.matches("^(\\d+(\\.\\d*)?|\\.\\d+)$")){
+        if (!StringUtils.isNumeric(rateStringValue)) {
             resp.setStatus(400);
             mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
         }
@@ -67,8 +68,8 @@ public class ExchangeRateController extends HttpServlet {
         Double rate = Double.parseDouble(rateStringValue);
 
         try{
-            mapper.responseToJson(resp, exchangeRatesService.updateExchangeRate(rate, baseCurrencyCode, targetCurrencyCode));
-        }catch (DataBaseIsNotAvalibleException e) {
+            mapper.responseToJson(resp, exchangeRatesService.updateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
+        }catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
             mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }catch (ExchangeRateDoesNotExistException e) {
