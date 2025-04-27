@@ -4,9 +4,10 @@ import java.io.*;
 
 import model.exceptions.CurrencyAlreadyExistsException;
 import model.exceptions.CurrencyCreationException;
-import model.exceptions.DataBaseIsNotAvalibleException;
+import model.exceptions.DataBaseIsNotAvailableException;
 import model.dto.CurrencyDto;
 import model.dto.ErrorDto;
+import org.apache.commons.lang3.StringUtils;
 import services.CurrenciesService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
@@ -28,7 +29,7 @@ public class CurrenciesController extends HttpServlet {
 
             mapper.responseToJson(resp, currenciesService.findAll());
 
-        } catch (DataBaseIsNotAvalibleException e) {
+        } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
             mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }
@@ -39,12 +40,12 @@ public class CurrenciesController extends HttpServlet {
 
         resp.setContentType("application/json");
 
-        String name = req.getParameter("name");
         String code = req.getParameter("code");
+        String name = req.getParameter("name");
         String sign = req.getParameter("sign");
 
-        if (code == null || name == null || sign == null || code.isEmpty() || name.isEmpty() || sign.isEmpty())
-        {
+        if (StringUtils.isEmpty(code) || StringUtils.isEmpty(name) || StringUtils.isEmpty(sign)) {
+            resp.setStatus(400);
             mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
             return;
         }
@@ -61,7 +62,7 @@ public class CurrenciesController extends HttpServlet {
         } catch (CurrencyAlreadyExistsException e){
             resp.setStatus(409);
             mapper.responseToJson(resp, new ErrorDto("Валюта с таким кодом уже существует"));
-        } catch (DataBaseIsNotAvalibleException e) {
+        } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
             mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }
