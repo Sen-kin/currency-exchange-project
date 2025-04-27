@@ -210,14 +210,14 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
                     resultSet.getLong("ExchangeId"),
                         new CurrencyDto(
                                 resultSet.getLong("baseId"),
-                                resultSet.getString("baseName"),
                                 resultSet.getString("baseCode"),
+                                resultSet.getString("baseName"),
                                 resultSet.getString("baseSign")
                                 ),
                         new CurrencyDto(
                                 resultSet.getLong("targetId"),
-                                resultSet.getString("targetName"),
                                 resultSet.getString("targetCode"),
+                                resultSet.getString("targetName"),
                                 resultSet.getString("targetSign")
                         ),
                     resultSet.getDouble("ExchangeRate")
