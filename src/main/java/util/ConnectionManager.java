@@ -19,7 +19,7 @@ public class ConnectionManager {
         static {
             config.setJdbcUrl("jdbc:sqlite:C:\\Users\\User\\IdeaProjects\\currency-exchange\\identifier.sqlite");
             config.setDriverClassName("org.sqlite.JDBC");
-            config.setMaximumPoolSize(20);
+            config.setMaximumPoolSize(10);
             config.setConnectionTimeout(5000);
             config.setIdleTimeout(60000);
             config.setMaxLifetime(1800000);
