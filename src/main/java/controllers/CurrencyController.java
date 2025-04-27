@@ -16,9 +16,9 @@ import java.io.IOException;
 @WebServlet("/currency/*")
 public class CurrencyController extends HttpServlet {
 
-    private final JsonMapper mapper = JsonMapper.getInstance();
+    private final CurrencyService CURRENCY_SERVICE = CurrencyService.getInstance();
 
-    private final CurrencyService currencyService = CurrencyService.getInstance();
+    private final JsonMapper MAPPER = JsonMapper.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,25 +29,26 @@ public class CurrencyController extends HttpServlet {
 
         if  (path == null || path.length() != 4)
         {
-            mapper.responseToJson(resp, new ErrorDto("Код валюты отсутствует в адресе"));
+            MAPPER.responseToJson(resp, new ErrorDto("Код валюты отсутствует в адресе"));
+            return;
         }
 
         String code = path.substring(1).toUpperCase();
 
         try{
-            CurrencyDto currency = currencyService.findByCode(code);
+            CurrencyDto currency = CURRENCY_SERVICE.findByCode(code);
 
-            mapper.responseToJson(resp, currency);
+            MAPPER.responseToJson(resp, currency);
 
         } catch (CurrencyDoesNotExistException e){
 
             resp.setStatus(404);
-            mapper.responseToJson(resp, new ErrorDto("Валюта не найдена"));
+            MAPPER.responseToJson(resp, new ErrorDto("Валюта не найдена"));
 
         } catch (DataBaseIsNotAvailableException e){
 
             resp.setStatus(500);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
 
         }
 
