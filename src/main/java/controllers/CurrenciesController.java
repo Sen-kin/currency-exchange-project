@@ -16,9 +16,9 @@ import jakarta.servlet.annotation.*;
 @WebServlet(value = "/currencies")
 public class CurrenciesController extends HttpServlet {
 
-    private final CurrenciesService currenciesService = CurrenciesService.getInstance();
+    private final CurrenciesService CURRENCY_SERVICE = CurrenciesService.getInstance();
 
-    private final JsonMapper mapper = JsonMapper.getInstance();
+    private final JsonMapper MAPPER = JsonMapper.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -27,11 +27,11 @@ public class CurrenciesController extends HttpServlet {
 
         try {
 
-            mapper.responseToJson(resp, currenciesService.findAll());
+            MAPPER.responseToJson(resp, CURRENCY_SERVICE.findAll());
 
         } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }
     }
 
@@ -46,25 +46,25 @@ public class CurrenciesController extends HttpServlet {
 
         if (StringUtils.isEmpty(code) || StringUtils.isEmpty(name) || StringUtils.isEmpty(sign)) {
             resp.setStatus(400);
-            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            MAPPER.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
             return;
         }
 
         try {
 
-            CurrencyDto newCurrency = currenciesService.createCurrency(new CurrencyDto(null, code, name, sign));
+            CurrencyDto newCurrency = CURRENCY_SERVICE.createCurrency(new CurrencyDto(null, code, name, sign));
 
-            mapper.responseToJson(resp, newCurrency);
+            MAPPER.responseToJson(resp, newCurrency);
 
         } catch (CurrencyCreationException e) {
             resp.setStatus(400);
-            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            MAPPER.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
         } catch (CurrencyAlreadyExistsException e){
             resp.setStatus(409);
-            mapper.responseToJson(resp, new ErrorDto("Валюта с таким кодом уже существует"));
+            MAPPER.responseToJson(resp, new ErrorDto("Валюта с таким кодом уже существует"));
         } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }
     }
  }
