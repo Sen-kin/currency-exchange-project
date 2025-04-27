@@ -18,9 +18,9 @@ import java.io.IOException;
 @WebServlet("/exchangeRates")
 public class ExchangeRatesController extends HttpServlet {
 
-    private static final JsonMapper mapper = JsonMapper.getInstance();
+    private final ExchangeRatesService EXCHANGE_RATES_SERVICE = ExchangeRatesService.getInstance();
 
-    private final ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
+    private static final JsonMapper MAPPER = JsonMapper.getInstance();
 
 
     @Override
@@ -29,9 +29,9 @@ public class ExchangeRatesController extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            mapper.responseToJson(resp, exchangeRatesService.findAllExchangeRates());
+            MAPPER.responseToJson(resp, EXCHANGE_RATES_SERVICE.findAllExchangeRates());
         } catch (DataBaseIsNotAvailableException e) {
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }
     }
 
@@ -46,30 +46,28 @@ public class ExchangeRatesController extends HttpServlet {
 
         if (StringUtils.isEmpty(baseCurrencyCode) || StringUtils.isEmpty(targetCurrencyCode) || StringUtils.isEmpty(rateStringValue) || !StringUtils.isNumeric(rateStringValue)) {
             resp.setStatus(400);
-            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            MAPPER.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
             return;
         }
 
         Double rate = Double.parseDouble(rateStringValue);
 
         try {
-            mapper.responseToJson(resp, exchangeRatesService.createExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
+            MAPPER.responseToJson(resp, EXCHANGE_RATES_SERVICE.createExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
         } catch (ExchangeRateAlreadyExistsException e) {
             resp.setStatus(409);
-            mapper.responseToJson(resp, new ErrorDto("Валютная пара с таким кодом уже существует"));
+            MAPPER.responseToJson(resp, new ErrorDto("Валютная пара с таким кодом уже существует"));
         } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         } catch (ExchangeRateCodeDoesNotExistException e) {
             resp.setStatus(404);
-            mapper.responseToJson(resp, new ErrorDto("Одна (или обе) валюта из валютной пары не существует в БД"));
+            MAPPER.responseToJson(resp, new ErrorDto("Одна (или обе) валюта из валютной пары не существует в БД"));
         } catch (ExchangeRateCreationException e) {
             resp.setStatus(400);
-            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            MAPPER.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
         }
     }
-
-
 }
 
 
