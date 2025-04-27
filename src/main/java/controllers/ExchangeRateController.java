@@ -58,7 +58,6 @@ public class ExchangeRateController extends HttpServlet {
         String targetCurrencyCode = path.substring(4, 7);
         String rateStringValue = req.getParameter("rate");
 
-        System.out.println(rateStringValue);
 
         if (!rateStringValue.matches("^(\\d+(\\.\\d*)?|\\.\\d+)$")){
             resp.setStatus(400);
