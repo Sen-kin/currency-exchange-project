@@ -29,7 +29,7 @@ public class CurrencyDao implements CurrencyCRUD<String, CurrencyEntity>{
 
             ResultSet result = statement.executeQuery();
 
-            if (result.getString("Code") == null)
+            if (!result.next())
             {
                 throw new CurrencyDoesNotExistException();
             }
