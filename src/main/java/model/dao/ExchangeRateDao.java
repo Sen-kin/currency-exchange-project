@@ -32,7 +32,14 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
                        JOIN Currencies C on C.ID = ExchangeRates.BaseCurrencyId
                        JOIN Currencies C2 on C2.ID = ExchangeRates.TargetCurrencyId""";
 
-    private static final String FIND_BY_ID = "SELECT * FROM ExchangeRates WHERE ID=?";
+    private static final String FIND_BY_ID = """
+            SELECT ExchangeRates.ID ExchangeId,
+                   C.ID baseId, C.FullName baseName, C.Code baseCode, C.Sign baseSign,
+                   C2.ID targetId, C2.FullName targetName, C2.Code targetCode, C2.Sign targetSign,
+                   Rate ExchangeRate FROM ExchangeRates
+                   JOIN Currencies C on C.ID = ExchangeRates.BaseCurrencyId
+                   JOIN Currencies C2 on C2.ID = ExchangeRates.TargetCurrencyId
+            WHERE ExchangeRates.ID=?""";
 
     private static final String FIND_BY_CODES = """
             SELECT ExchangeRates.ID ExchangeId,
@@ -41,7 +48,7 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
                    Rate ExchangeRate FROM ExchangeRates
                        JOIN Currencies C on C.ID = ExchangeRates.BaseCurrencyId
                        JOIN Currencies C2 on C2.ID = ExchangeRates.TargetCurrencyId
-                    WHERE C.Code =? AND C2.Code=?
+            WHERE C.Code =? AND C2.Code=?
             """;
 
     private static final String UPDATE = """
@@ -88,7 +95,7 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
             ResultSet resultset = statement.executeQuery();
 
             if (!resultset.next()){
-                throw new ExchangeRateDoesNotExistException();
+                return null;
             }
 
             return builder(resultset);
@@ -111,13 +118,10 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
             )
                 throw new ExchangeRateCodeDoesNotExistException();
 
-            if (INSTANCE.findByCodes(exchangeRatesDto.baseCurrency().code(), exchangeRatesDto.targetCurrency().code()).id() != 0)
+            if (INSTANCE.findByCodes(exchangeRatesDto.baseCurrency().code(), exchangeRatesDto.targetCurrency().code()) != null)
             {
                 throw new ExchangeRateAlreadyExistsException();
             }
-
-
-
 
             statement.setString(1, exchangeRatesDto.baseCurrency().code());
             statement.setString(2, exchangeRatesDto.targetCurrency().code());
@@ -158,25 +162,24 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
 
     @Override
     public ExchangeRateDto update(ExchangeRateDto exchangeRateDto) throws DataBaseIsNotAvalibleException, ExchangeRateDoesNotExistException {
+
         try(
                 Connection connection = ConnectionManager.get();
-            PreparedStatement statement = connection.prepareStatement(UPDATE, Statement.RETURN_GENERATED_KEYS)
+            PreparedStatement statement = connection.prepareStatement(UPDATE)
+
         ){
-            if (
-                    !CURRENCIES.selectAllCodes().contains(exchangeRateDto.baseCurrency().code()) ||
-                    !CURRENCIES.selectAllCodes().contains(exchangeRateDto.targetCurrency().code())
-            ) throw new ExchangeRateDoesNotExistException();
 
             statement.setDouble(1, exchangeRateDto.rate());
             statement.setString(2, exchangeRateDto.baseCurrency().code());
             statement.setString(3, exchangeRateDto.targetCurrency().code());
 
-            statement.executeUpdate();
+            int updatedRows = statement.executeUpdate();
 
-            ResultSet id = statement.getGeneratedKeys();
+            if (updatedRows == 0){
+                throw new ExchangeRateDoesNotExistException();
+            }
 
-
-           return INSTANCE.findById(id.getLong(1));
+           return INSTANCE.findById(INSTANCE.findByCodes(exchangeRateDto.baseCurrency().code(), exchangeRateDto.targetCurrency().code()).id());
 
         } catch (SQLException e) {
             throw new DataBaseIsNotAvalibleException(e);
@@ -205,5 +208,7 @@ public class ExchangeRateDao implements ExchangeRateCRUD<String, ExchangeRateDto
     public static ExchangeRateDao getInstance() {
         return INSTANCE;
     }
+
+
 }
 
