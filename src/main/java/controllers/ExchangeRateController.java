@@ -16,9 +16,9 @@ import java.io.IOException;
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateController extends HttpServlet {
 
-        private static final ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
+        private static final ExchangeRatesService EXCHANGE_RATES_SERVICE = ExchangeRatesService.getInstance();
 
-        private static final JsonMapper mapper = JsonMapper.getInstance();
+        private static final JsonMapper MAPPER = JsonMapper.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,22 +29,23 @@ public class ExchangeRateController extends HttpServlet {
 
             if(path == null || path.length() != 7){
                 resp.setStatus(400);
-                mapper.responseToJson(resp, new ErrorDto("Коды валют пары отсутствуют в адресе"));
+                MAPPER.responseToJson(resp, new ErrorDto("Коды валют пары отсутствуют в адресе"));
+                return;
             }
 
             String baseCode = path.substring(1, 4);
             String targetCode = path.substring(4,7);
 
             try {
-                mapper.responseToJson(resp, exchangeRatesService.findExchangeRate(baseCode, targetCode));
+                MAPPER.responseToJson(resp, EXCHANGE_RATES_SERVICE.findExchangeRate(baseCode, targetCode));
 
             } catch (DataBaseIsNotAvailableException e) {
                 resp.setStatus(500);
-                mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+                MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
 
             } catch (ExchangeRateDoesNotExistException e) {
                 resp.setStatus(404);
-                mapper.responseToJson(resp, new ErrorDto("Обменный курс для пары не найден"));
+                MAPPER.responseToJson(resp, new ErrorDto("Обменный курс для пары не найден"));
             }
     }
 
@@ -55,28 +56,32 @@ public class ExchangeRateController extends HttpServlet {
 
         String path = req.getPathInfo();
 
+        if(path == null || path.length() != 7){
+            resp.setStatus(400);
+            MAPPER.responseToJson(resp, new ErrorDto("Коды валют пары отсутствуют в адресе"));
+            return;
+        }
+
         String baseCurrencyCode = path.substring(1, 4);
         String targetCurrencyCode = path.substring(4, 7);
         String rateStringValue = req.getParameter("rate");
 
-
         if (!StringUtils.isNumeric(rateStringValue)) {
             resp.setStatus(400);
-            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            MAPPER.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            return;
         }
 
         Double rate = Double.parseDouble(rateStringValue);
 
         try{
-            mapper.responseToJson(resp, exchangeRatesService.updateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
+            MAPPER.responseToJson(resp, EXCHANGE_RATES_SERVICE.updateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate));
         }catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         }catch (ExchangeRateDoesNotExistException e) {
             resp.setStatus(404);
-            mapper.responseToJson(resp, new ErrorDto("Валютная пара отсутствует в базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Валютная пара отсутствует в базе данных"));
         }
-
     }
-
 }
