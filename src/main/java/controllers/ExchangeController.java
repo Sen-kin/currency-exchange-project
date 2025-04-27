@@ -16,8 +16,9 @@ import java.io.IOException;
 @WebServlet("/exchange")
 public class ExchangeController extends HttpServlet {
 
-    JsonMapper mapper = JsonMapper.getInstance();
-    ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
+    ExchangeRatesService EXCHANGE_RATES_SERVICE = ExchangeRatesService.getInstance();
+
+    JsonMapper MAPPER = JsonMapper.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -30,20 +31,20 @@ public class ExchangeController extends HttpServlet {
 
         if (StringUtils.isEmpty(from) || StringUtils.isEmpty(to) || !StringUtils.isNumeric(amountStringValue)) {
             resp.setStatus(400);
-            mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            MAPPER.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
             return;
         }
 
         Double amount = Double.parseDouble(amountStringValue);
 
         try {
-            mapper.responseToJson(resp, exchangeRatesService.exchange(from, to, amount));
+            MAPPER.responseToJson(resp, EXCHANGE_RATES_SERVICE.exchange(from, to, amount));
         } catch (DataBaseIsNotAvailableException e) {
             resp.setStatus(500);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка доступа к базе данных"));
         } catch (ExchangeRateDoesNotExistException e) {
             resp.setStatus(404);
-            mapper.responseToJson(resp, new ErrorDto("Ошибка выполнения обмена"));
+            MAPPER.responseToJson(resp, new ErrorDto("Ошибка выполнения обмена"));
         }
     }
 }
