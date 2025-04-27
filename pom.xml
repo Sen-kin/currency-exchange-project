@@ -12,8 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>23</maven.compiler.target>
-        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
         <junit.version>5.11.0</junit.version>
     </properties>
 
@@ -62,6 +62,12 @@
             <version>6.3.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.17.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -84,8 +90,8 @@
                             <version>1.18.38</version>
                         </path>
                     </annotationProcessorPaths>
-                    <source>23</source>
-                    <target>23</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
         </plugins>
