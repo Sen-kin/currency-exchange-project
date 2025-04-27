@@ -14,6 +14,8 @@ public class ExchangeRatesService {
 
     private static final ExchangeRatesService INSTANCE = new ExchangeRatesService();
 
+    private static final String crossRateCurrency = "USD";
+
     private ExchangeRatesService() {}
 
     public ExchangeRateDto createExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate)
@@ -54,7 +56,7 @@ public class ExchangeRatesService {
 
        try {
 
-           ExchangeRateDto AB = INSTANCE.findExchangeRate(from, to);
+           ExchangeRateDto AB = findExchangeRate(from, to);
            return new ExchangeDto(
                    new CurrencyDto(
                            AB.baseCurrency().id(),
@@ -74,7 +76,7 @@ public class ExchangeRatesService {
        } catch (ExchangeRateDoesNotExistException e) {
            try {
 
-               ExchangeRateDto BA = INSTANCE.findExchangeRate(to, from);
+               ExchangeRateDto BA = findExchangeRate(to, from);
 
                return new ExchangeDto(
                        new CurrencyDto(
@@ -94,23 +96,23 @@ public class ExchangeRatesService {
 
            } catch (ExchangeRateDoesNotExistException e2){
 
-               ExchangeRateDto A_USD = INSTANCE.findExchangeRate(from, "USD");
-                   ExchangeRateDto USD_B = INSTANCE.findExchangeRate("USD", to);
+               ExchangeRateDto A_XXX = findExchangeRate(from, crossRateCurrency);
+               ExchangeRateDto XXX_B = findExchangeRate(crossRateCurrency, to);
 
                    return new ExchangeDto(
                            new CurrencyDto(
-                                   A_USD.baseCurrency().id(),
-                                   A_USD.baseCurrency().name(),
-                                   A_USD.baseCurrency().code(),
-                                   A_USD.baseCurrency().sign()
+                                   A_XXX.baseCurrency().id(),
+                                   A_XXX.baseCurrency().name(),
+                                   A_XXX.baseCurrency().code(),
+                                   A_XXX.baseCurrency().sign()
                            ),
                            new CurrencyDto(
-                                   USD_B.targetCurrency().id(),
-                                   USD_B.targetCurrency().name(),
-                                   USD_B.targetCurrency().code(),
-                                   USD_B.targetCurrency().sign()
+                                   XXX_B.targetCurrency().id(),
+                                   XXX_B.targetCurrency().name(),
+                                   XXX_B.targetCurrency().code(),
+                                   XXX_B.targetCurrency().sign()
                            ),
-                           USD_B.rate() / A_USD.rate(), amount,(USD_B.rate() / A_USD.rate()) * amount
+                           XXX_B.rate() / A_XXX.rate(), amount,(XXX_B.rate() / A_XXX.rate()) * amount
 
 
                    );
