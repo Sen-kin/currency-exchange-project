@@ -46,6 +46,7 @@ public class CurrenciesController extends HttpServlet {
         if (code == null || name == null || sign == null || code.isEmpty() || name.isEmpty() || sign.isEmpty())
         {
             mapper.responseToJson(resp, new ErrorDto("Отсутствует нужное поле формы"));
+            return;
         }
 
         try {
