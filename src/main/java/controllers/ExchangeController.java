@@ -15,13 +15,13 @@ import java.io.IOException;
 @WebServlet("/exchange")
 public class ExchangeController extends HttpServlet {
 
-    private ExchangeRateService exchangeRatesService;
+    private ExchangeRateService exchangeRateService;
     private JSONMapper mapper;
 
     @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
-        exchangeRatesService = (ExchangeRateService) context.getAttribute("exchangeRatesService");
+        exchangeRateService = (ExchangeRateService) context.getAttribute("exchangeRatesService");
         mapper = (JSONMapper) context.getAttribute("jsonMapper");
     }
 
@@ -36,7 +36,7 @@ public class ExchangeController extends HttpServlet {
 
         Double amount = Double.parseDouble(amountStringValue);
 
-        mapper.writeResponseAsJson(resp, exchangeRatesService.exchange(baseCurrencyCode, targetCurrencyCode, amount));
+        mapper.writeResponseAsJson(resp, exchangeRateService.exchange(baseCurrencyCode, targetCurrencyCode, amount));
     }
 }
 

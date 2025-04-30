@@ -19,6 +19,7 @@ import utils.PropertiesUtil;
 public class ContextListener implements ServletContextListener {
     private static final String URL = "db.url";
     private static final String DRIVER = "db.driver";
+    private static final String CROSS_CURRENCY = "USD";
 
 
     @Override
@@ -28,17 +29,17 @@ public class ContextListener implements ServletContextListener {
 
         context.setAttribute("dataSource", dataSource);
 
-        CurrencyRepository currencyDao = new CurrencyRepository(dataSource);
-        ExchangeRateRepository exchangeRateDao = new ExchangeRateRepository(dataSource);
+        CurrencyRepository currencyRepository = new CurrencyRepository(dataSource);
+        ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepository(dataSource);
 
-        CurrencyService currencyService = new CurrencyService(currencyDao);
-        ExchangeRateService exchangeRatesService = new ExchangeRateService(exchangeRateDao, currencyDao, "USD");
+        CurrencyService currencyService = new CurrencyService(currencyRepository);
+        ExchangeRateService exchangeRateService = new ExchangeRateService(exchangeRateRepository, currencyRepository, CROSS_CURRENCY);
 
         ObjectMapper mapper = new ObjectMapper();
         JSONMapper JSONMapper = new JSONMapper(mapper);
 
         context.setAttribute("currencyService", currencyService);
-        context.setAttribute("exchangeRateService", exchangeRatesService);
+        context.setAttribute("exchangeRateService", exchangeRateService);
         context.setAttribute("jsonMapper", JSONMapper);
     }
 
