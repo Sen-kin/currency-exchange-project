@@ -1,18 +1,17 @@
 package controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
-import repository.CurrenciesDao;
-import repository.CurrencyDao;
-import repository.ExchangeRateDao;
-import service.CurrenciesService;
+import repository.CurrencyRepository;
+import repository.ExchangeRateRepository;
 import service.CurrencyService;
 import service.ExchangeRateService;
-import util.JsonMapper;
+import util.JSONMapper;
 
 
 @WebListener
@@ -25,19 +24,18 @@ public class ContextListener implements ServletContextListener {
 
         context.setAttribute("dataSource", dataSource);
 
-        CurrenciesDao currenciesDao = new CurrenciesDao(dataSource);
-        CurrencyDao currencyDao = new CurrencyDao(dataSource);
-        ExchangeRateDao exchangeRateDao = new ExchangeRateDao(dataSource, currenciesDao);
+        CurrencyRepository currencyDao = new CurrencyRepository(dataSource);
+        ExchangeRateRepository exchangeRateDao = new ExchangeRateRepository(dataSource);
 
-        CurrenciesService currenciesService = new CurrenciesService(currenciesDao);
         CurrencyService currencyService = new CurrencyService(currencyDao);
-        ExchangeRateService exchangeRatesService = new ExchangeRateService(exchangeRateDao);
-        JsonMapper mapper = new JsonMapper();
+        ExchangeRateService exchangeRatesService = new ExchangeRateService(exchangeRateDao, currencyDao, "USD");
 
-        context.setAttribute("currenciesService", currenciesService);
+        ObjectMapper mapper = new ObjectMapper();
+        JSONMapper JSONMapper = new JSONMapper(mapper);
+
         context.setAttribute("currencyService", currencyService);
         context.setAttribute("exchangeRatesService", exchangeRatesService);
-        context.setAttribute("jsonMapper", mapper);
+        context.setAttribute("jsonMapper", JSONMapper);
     }
 
     @Override
@@ -62,6 +60,4 @@ public class ContextListener implements ServletContextListener {
         }
         return dataSource;
     }
-
-
 }
