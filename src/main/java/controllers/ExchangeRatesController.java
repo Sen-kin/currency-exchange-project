@@ -36,7 +36,7 @@ public class ExchangeRatesController extends HttpServlet {
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         String rateStringValue = req.getParameter("rate");
 
-        ValidationUtil.exchangeCodesValidation(baseCurrencyCode, targetCurrencyCode);
+        ValidationUtil.exchangeRateCodesValidation(baseCurrencyCode, targetCurrencyCode);
         ValidationUtil.numberValidation(rateStringValue);
 
         Double rate = Double.parseDouble(rateStringValue);
