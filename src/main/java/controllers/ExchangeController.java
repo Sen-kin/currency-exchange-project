@@ -21,7 +21,7 @@ public class ExchangeController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
-        exchangeRateService = (ExchangeRateService) context.getAttribute("exchangeRatesService");
+        exchangeRateService = (ExchangeRateService) context.getAttribute("exchangeRateService");
         mapper = (JSONMapper) context.getAttribute("jsonMapper");
     }
 
@@ -31,7 +31,7 @@ public class ExchangeController extends HttpServlet {
         String targetCurrencyCode = req.getParameter("to");
         String amountStringValue = req.getParameter("amount");
 
-        ValidationUtil.exchangeCodesValidation(baseCurrencyCode, targetCurrencyCode);
+        ValidationUtil.exchangeRateCodesValidation(baseCurrencyCode, targetCurrencyCode);
         ValidationUtil.numberValidation(amountStringValue);
 
         Double amount = Double.parseDouble(amountStringValue);
