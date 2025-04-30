@@ -1,16 +1,15 @@
 package model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
-public class CurrencyEntity {
-
+@NoArgsConstructor
+public class Currency {
     private Long id;
     private String code;
     private String name;
     private String sign;
-
-
 }
