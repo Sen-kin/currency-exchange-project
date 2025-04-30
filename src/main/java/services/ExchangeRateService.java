@@ -1,15 +1,15 @@
-package service;
+package services;
 
-import model.dto.CurrencyDTO;
-import model.entity.Currency;
-import model.entity.ExchangeRate;
+import models.dto.CurrencyDTO;
+import models.entity.Currency;
+import models.entity.ExchangeRate;
 import repository.CurrencyRepository;
 import repository.ExchangeRateRepository;
-import model.dto.ExchangeDTO;
-import model.dto.ExchangeRateDTO;
-import exception.*;
-import util.CurrencyMapper;
-import util.ExchangeRateMapper;
+import models.dto.ExchangeDTO;
+import models.dto.ExchangeRateDTO;
+import exceptions.*;
+import mappers.CurrencyMapper;
+import mappers.ExchangeRateMapper;
 
 import java.util.List;
 

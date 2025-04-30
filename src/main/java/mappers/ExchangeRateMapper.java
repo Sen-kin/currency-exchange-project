@@ -1,7 +1,7 @@
-package util;
+package mappers;
 
-import model.dto.ExchangeRateDTO;
-import model.entity.ExchangeRate;
+import models.dto.ExchangeRateDTO;
+import models.entity.ExchangeRate;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

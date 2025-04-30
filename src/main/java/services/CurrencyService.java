@@ -1,10 +1,10 @@
-package service;
+package services;
 
-import exception.CurrencyDoesNotExistException;
-import model.dto.CurrencyDTO;
+import exceptions.CurrencyDoesNotExistException;
+import models.dto.CurrencyDTO;
 import repository.CurrencyRepository;
-import model.entity.Currency;
-import util.CurrencyMapper;
+import models.entity.Currency;
+import mappers.CurrencyMapper;
 
 import java.util.List;
 

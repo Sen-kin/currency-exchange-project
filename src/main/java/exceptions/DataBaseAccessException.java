@@ -1,6 +1,4 @@
-package exception;
-
-import java.sql.SQLException;
+package exceptions;
 
 public class DataBaseAccessException extends RuntimeException {
     public DataBaseAccessException(String message) {

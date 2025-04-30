@@ -1,14 +1,14 @@
-package controller;
+package controllers;
 
 import jakarta.servlet.ServletContext;
-import service.ExchangeRateService;
+import services.ExchangeRateService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import util.JSONMapper;
-import util.ValidationUtil;
+import mappers.JSONMapper;
+import utils.ValidationUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,13 +19,13 @@ import java.util.Scanner;
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateController extends HttpServlet {
 
-    private ExchangeRateService exchangeRatesService;
+    private ExchangeRateService exchangeRateService;
     private JSONMapper mapper;
 
     @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
-        exchangeRatesService = (ExchangeRateService) context.getAttribute("exchangeRatesService");
+        exchangeRateService = (ExchangeRateService) context.getAttribute("exchangeRateService");
         mapper = (JSONMapper) context.getAttribute("jsonMapper");
     }
 
@@ -36,7 +36,7 @@ public class ExchangeRateController extends HttpServlet {
         String baseCurrencyCode = path.substring(1, 4);
         String targetCurrencyCode = path.substring(4, 7);
 
-        mapper.writeResponseAsJson(resp, exchangeRatesService.find(baseCurrencyCode, targetCurrencyCode));
+        mapper.writeResponseAsJson(resp, exchangeRateService.find(baseCurrencyCode, targetCurrencyCode));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ExchangeRateController extends HttpServlet {
 
         Double rate = Double.parseDouble(rateStringValue);
 
-        mapper.writeResponseAsJson(resp, exchangeRatesService.update(baseCurrencyCode, targetCurrencyCode, rate));
+        mapper.writeResponseAsJson(resp, exchangeRateService.update(baseCurrencyCode, targetCurrencyCode, rate));
     }
 
     private static String rateReturningFromPatchHelper(HttpServletRequest req) throws IOException {

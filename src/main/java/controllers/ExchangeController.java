@@ -1,4 +1,4 @@
-package controller;
+package controllers;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -6,13 +6,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.dto.ErrorDTO;
-import exception.DataBaseAccessException;
-import exception.ExchangeRateDoesNotExistException;
-import org.apache.commons.lang3.StringUtils;
-import service.ExchangeRateService;
-import util.JSONMapper;
-import util.ValidationUtil;
+import services.ExchangeRateService;
+import mappers.JSONMapper;
+import utils.ValidationUtil;
 
 import java.io.IOException;
 

@@ -1,33 +1,33 @@
-package controller;
+package controllers;
 
 import jakarta.servlet.ServletContext;
-import service.ExchangeRateService;
+import services.ExchangeRateService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import util.JSONMapper;
-import util.ValidationUtil;
+import mappers.JSONMapper;
+import utils.ValidationUtil;
 
 import java.io.IOException;
 
 @WebServlet("/exchangeRates")
 public class ExchangeRatesController extends HttpServlet {
 
-    private ExchangeRateService exchangeRatesService;
+    private ExchangeRateService exchangeRateService;
     private JSONMapper mapper;
 
     @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
-        exchangeRatesService = (ExchangeRateService) context.getAttribute("exchangeRatesService");
+        exchangeRateService = (ExchangeRateService) context.getAttribute("exchangeRateService");
         mapper = (JSONMapper) context.getAttribute("jsonMapper");
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        mapper.writeResponseAsJson(resp, exchangeRatesService.findAll());
+        mapper.writeResponseAsJson(resp, exchangeRateService.findAll());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ExchangeRatesController extends HttpServlet {
 
         Double rate = Double.parseDouble(rateStringValue);
 
-        mapper.writeResponseAsJson(resp, exchangeRatesService.create(baseCurrencyCode, targetCurrencyCode, rate));
+        mapper.writeResponseAsJson(resp, exchangeRateService.create(baseCurrencyCode, targetCurrencyCode, rate));
     }
 }
 

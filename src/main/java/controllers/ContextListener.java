@@ -1,4 +1,4 @@
-package controller;
+package controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariConfig;
@@ -9,13 +9,17 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import repository.CurrencyRepository;
 import repository.ExchangeRateRepository;
-import service.CurrencyService;
-import service.ExchangeRateService;
-import util.JSONMapper;
+import services.CurrencyService;
+import services.ExchangeRateService;
+import mappers.JSONMapper;
+import utils.PropertiesUtil;
 
 
 @WebListener
 public class ContextListener implements ServletContextListener {
+    private static final String URL = "db.url";
+    private static final String DRIVER = "db.driver";
+
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -34,7 +38,7 @@ public class ContextListener implements ServletContextListener {
         JSONMapper JSONMapper = new JSONMapper(mapper);
 
         context.setAttribute("currencyService", currencyService);
-        context.setAttribute("exchangeRatesService", exchangeRatesService);
+        context.setAttribute("exchangeRateService", exchangeRatesService);
         context.setAttribute("jsonMapper", JSONMapper);
     }
 
@@ -50,8 +54,8 @@ public class ContextListener implements ServletContextListener {
         HikariDataSource dataSource;
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite::resource:identifier.sqlite");
-            config.setDriverClassName("org.sqlite.JDBC");
+            config.setJdbcUrl(PropertiesUtil.get(URL));
+            config.setDriverClassName(PropertiesUtil.get(DRIVER));
             config.setMaximumPoolSize(5);
             config.setConnectionTimeout(5000);
             dataSource = new HikariDataSource(config);

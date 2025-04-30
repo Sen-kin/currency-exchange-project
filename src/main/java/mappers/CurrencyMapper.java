@@ -1,7 +1,7 @@
-package util;
+package mappers;
 
-import model.dto.CurrencyDTO;
-import model.entity.Currency;
+import models.dto.CurrencyDTO;
+import models.entity.Currency;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -1,15 +1,15 @@
-package controller;
+package controllers;
 
 import jakarta.servlet.ServletContext;
-import model.dto.CurrencyDTO;
-import service.CurrencyService;
+import models.dto.CurrencyDTO;
+import services.CurrencyService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import util.JSONMapper;
-import util.ValidationUtil;
+import mappers.JSONMapper;
+import utils.ValidationUtil;
 
 import java.io.IOException;
 

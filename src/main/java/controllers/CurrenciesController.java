@@ -1,32 +1,32 @@
-package controller;
+package controllers;
 
 import java.io.*;
 
 import jakarta.servlet.ServletContext;
-import model.dto.CurrencyDTO;
+import models.dto.CurrencyDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import service.CurrencyService;
-import util.JSONMapper;
-import util.ValidationUtil;
+import services.CurrencyService;
+import mappers.JSONMapper;
+import utils.ValidationUtil;
 
 @WebServlet(value = "/currencies")
 public class CurrenciesController extends HttpServlet {
 
-    private CurrencyService currenciesService;
+    private CurrencyService currencyService;
     private JSONMapper mapper;
 
     @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
-        currenciesService = (CurrencyService) context.getAttribute("currencyService");
+        currencyService = (CurrencyService) context.getAttribute("currencyService");
         mapper = (JSONMapper) context.getAttribute("jsonMapper");
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            mapper.writeResponseAsJson(resp, currenciesService.findAll());
+            mapper.writeResponseAsJson(resp, currencyService.findAll());
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CurrenciesController extends HttpServlet {
 
         CurrencyDTO currencyDTO = new CurrencyDTO(null, code, name, sign);
 
-        CurrencyDTO createdCurrency = currenciesService.create(currencyDTO);
+        CurrencyDTO createdCurrency = currencyService.create(currencyDTO);
         mapper.writeResponseAsJson(resp, createdCurrency);
     }
 }

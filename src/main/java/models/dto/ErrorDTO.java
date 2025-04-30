@@ -1,3 +1,3 @@
-package model.dto;
+package models.dto;
 
 public record ErrorDTO(String message) { }

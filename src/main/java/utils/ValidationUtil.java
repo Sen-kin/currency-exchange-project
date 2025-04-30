@@ -1,11 +1,11 @@
-package util;
+package utils;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
 @UtilityClass
 public class ValidationUtil {
-    private static final Integer CODE_LENGTH = 3;
+    private static final Integer ISO_CODE_LENGTH = 3;
     private static final Integer MAX_NAME_LENGTH = 25;
     private static final Integer MAX_SIGN_LENGTH = 4;
     private static final Integer MAX_NUMBER_LENGTH = 15;
@@ -19,8 +19,8 @@ public class ValidationUtil {
             throw new IllegalArgumentException("Name and Code must be Alphabetic");
         }
 
-        if (code.length() != CODE_LENGTH || !StringUtils.isAllUpperCase(code)) {
-            throw new IllegalArgumentException("Code Is Incorrect! Go and read ISO 4217");
+        if (code.length() != ISO_CODE_LENGTH || !StringUtils.isAllUpperCase(code)) {
+            throw new IllegalArgumentException("Code doesn't meet the ISO 4217");
         }
 
         if (name.length() > MAX_NAME_LENGTH) throw new IllegalArgumentException("Currency's name is too big");
@@ -33,7 +33,7 @@ public class ValidationUtil {
 
         String code = path.substring(1);
 
-        if (!StringUtils.isAllUpperCase(code) || !StringUtils.isAlpha(code) || code.length() != CODE_LENGTH) {
+        if (!StringUtils.isAllUpperCase(code) || !StringUtils.isAlpha(code) || code.length() != ISO_CODE_LENGTH) {
             throw new IllegalArgumentException("Currency is 3 UPPER English Letters");
         }
     }
@@ -42,7 +42,7 @@ public class ValidationUtil {
         if (StringUtils.isEmpty(baseCurrencyCode) || StringUtils.isEmpty(targetCurrencyCode)) {
             throw new IllegalArgumentException("Fields cannot be empty");
         }
-        if (baseCurrencyCode.length() != CODE_LENGTH || targetCurrencyCode.length() != CODE_LENGTH || !StringUtils.isAllUpperCase(baseCurrencyCode + targetCurrencyCode)) {
+        if (baseCurrencyCode.length() != ISO_CODE_LENGTH || targetCurrencyCode.length() != ISO_CODE_LENGTH || !StringUtils.isAllUpperCase(baseCurrencyCode + targetCurrencyCode)) {
             throw new IllegalArgumentException("Code(s) Is (are) Incorrect! Go and read ISO 4217");
         }
     }
