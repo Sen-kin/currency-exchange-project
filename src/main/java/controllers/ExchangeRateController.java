@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateController extends HttpServlet {
 
@@ -48,7 +47,7 @@ public class ExchangeRateController extends HttpServlet {
         String targetCurrencyCode = path.substring(4, 7);
         String rateStringValue = rateReturningFromPatchHelper(req);
 
-        ValidationUtil.exchangeCodesValidation(baseCurrencyCode, targetCurrencyCode);
+        ValidationUtil.exchangeRateCodesValidation(baseCurrencyCode, targetCurrencyCode);
         ValidationUtil.numberValidation(rateStringValue);
 
         Double rate = Double.parseDouble(rateStringValue);
