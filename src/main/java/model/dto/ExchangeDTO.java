@@ -1,9 +1,9 @@
 package model.dto;
 
 
-public record ExchangeDto(
-        CurrencyDto baseCurrency,
-        CurrencyDto targetCurrency,
+public record ExchangeDTO(
+        CurrencyDTO baseCurrency,
+        CurrencyDTO targetCurrency,
         Double rate,
         Double amount,
         Double convertedAmount) {}

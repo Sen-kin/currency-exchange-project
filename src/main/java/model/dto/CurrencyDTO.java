@@ -1,9 +1,9 @@
 package model.dto;
 
 
-public record CurrencyDto(
+public record CurrencyDTO(
         Long id,
         String code,
         String name,
         String sign
-) { }
+) {}
