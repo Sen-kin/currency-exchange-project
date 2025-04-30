@@ -10,35 +10,42 @@ public class ValidationUtil {
     private static final Integer MAX_SIGN_LENGTH = 4;
     private static final Integer MAX_NUMBER_LENGTH = 15;
 
-    public static void currencyValidation(String code, String name, String sign) {
-        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(code) || StringUtils.isEmpty(sign)) {
-            throw new IllegalArgumentException("Fields cannot be empty");
+    public static void codeValidation(String code) {
+        if (StringUtils.isEmpty(code)) {
+            throw new IllegalArgumentException("Code cannot be empty");
         }
-
-        if (!StringUtils.isAlphaSpace(name) || !StringUtils.isAlpha(code)) {
-            throw new IllegalArgumentException("Name and Code must be Alphabetic");
+        if (!StringUtils.isAlpha(code) || !StringUtils.isAllUpperCase(code)) {
+            throw new IllegalArgumentException("Code must be ENGLISH UPPER");
         }
-
-        if (code.length() != ISO_CODE_LENGTH || !StringUtils.isAllUpperCase(code)) {
+        if (code.length() != ISO_CODE_LENGTH) {
             throw new IllegalArgumentException("Code doesn't meet the ISO 4217");
         }
+    }
 
-        if (name.length() > MAX_NAME_LENGTH) throw new IllegalArgumentException("Currency's name is too big");
-
-        if (sign.length() > MAX_SIGN_LENGTH) throw new IllegalArgumentException("Currency's sign is too big");
+    public static void nameAndSignValidation(String name, String sign) {
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(sign)) {
+            throw new IllegalArgumentException("Name and sign be empty");
+        }
+        if (!StringUtils.isAlphaSpace(name)) {
+            throw new IllegalArgumentException("Name must be Alphabetic");
+        }
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("Currency's name is too big");
+        }
+        if (sign.length() > MAX_SIGN_LENGTH) {
+            throw new IllegalArgumentException("Currency's sign is too big");
+        }
     }
 
     public static void pathCurrencyValidation(String path) {
-        if (path == null || path.length() != 4) throw new IllegalArgumentException("Please, enter the Currency code");
-
-        String code = path.substring(1);
-
-        if (!StringUtils.isAllUpperCase(code) || !StringUtils.isAlpha(code) || code.length() != ISO_CODE_LENGTH) {
-            throw new IllegalArgumentException("Currency is 3 UPPER English Letters");
+        if (path == null || path.length() != 4) {
+            throw new IllegalArgumentException("Please, enter the Currency code");
         }
+        String code = path.substring(1);
+        codeValidation(code);
     }
 
-    public static void exchangeCodesValidation(String baseCurrencyCode, String targetCurrencyCode) {
+    public static void exchangeRateCodesValidation(String baseCurrencyCode, String targetCurrencyCode) {
         if (StringUtils.isEmpty(baseCurrencyCode) || StringUtils.isEmpty(targetCurrencyCode)) {
             throw new IllegalArgumentException("Fields cannot be empty");
         }
@@ -51,26 +58,22 @@ public class ValidationUtil {
         if (StringUtils.isEmpty(path) || StringUtils.containsWhitespace(path) || path.length() != 7) {
             throw new IllegalArgumentException("Missing currency codes pair");
         }
-        String pairOfCodes = path.substring(1, 7);
-
-        if (!StringUtils.isAlpha(pairOfCodes) || !StringUtils.isAllUpperCase(pairOfCodes)) {
-            throw new IllegalArgumentException("Path must only contains 2 eng. UPPER codes");
-        }
+        String baseCurrencyCode = path.substring(1, 4);
+        String targetCurrencyCode = path.substring(4, 7);
+        exchangeRateCodesValidation(baseCurrencyCode, targetCurrencyCode);
     }
 
-    public static void numberValidation(String rate) {
-        if (StringUtils.isEmpty(rate)) {
-            throw new IllegalArgumentException("Rate(Amount) cannot be empty!");
+    public static void numberValidation(String number) {
+        if (StringUtils.isEmpty(number)) {
+            throw new IllegalArgumentException("Field cannot be empty");
         }
-        if (!StringUtils.isNumeric(rate.replaceAll("[.,]", ""))) {
-            throw new IllegalArgumentException("Rate(Amount) must be a number");
+        if (number.length() > MAX_NUMBER_LENGTH) {
+            throw new IllegalArgumentException("It's too big");
         }
-        if (StringUtils.countMatches(rate, ".") > 1) throw new IllegalArgumentException("Rate(Amount) contains only 1 dot");
-
-        if (rate.contains(",")) throw new IllegalArgumentException("Please, replace comma with dot");
-
-        if (rate.length() > MAX_NUMBER_LENGTH) throw new IllegalArgumentException("Rate(Amount) is too big :(");
-
+        try {
+            Double.parseDouble(number);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Incorrect number format");
+        }
     }
 }
-
