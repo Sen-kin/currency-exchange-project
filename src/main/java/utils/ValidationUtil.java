@@ -43,7 +43,7 @@ public class ValidationUtil {
             throw new IllegalArgumentException("Fields cannot be empty");
         }
         if (baseCurrencyCode.length() != ISO_CODE_LENGTH || targetCurrencyCode.length() != ISO_CODE_LENGTH || !StringUtils.isAllUpperCase(baseCurrencyCode + targetCurrencyCode)) {
-            throw new IllegalArgumentException("Code(s) Is (are) Incorrect! Go and read ISO 4217");
+            throw new IllegalArgumentException("Code(s) Is (are) don't (doesn't) meet ISO 4217");
         }
     }
 
