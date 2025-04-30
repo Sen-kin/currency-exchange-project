@@ -1,9 +1,9 @@
 package repository;
 
 import com.zaxxer.hikari.HikariDataSource;
-import exception.*;
-import model.entity.Currency;
-import model.entity.ExchangeRate;
+import exceptions.*;
+import models.entity.Currency;
+import models.entity.ExchangeRate;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ public class ExchangeRateRepository implements ExchangeRateCRUD<String, Exchange
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 19) {
-                throw new ExchangeRateAlreadyExistsException("Валютная пара с таким кодом уже существует");
+                throw new ExchangeRateAlreadyExistsException("Such Currency pair already exist");
             }
             throw new DataBaseAccessException("Server error");
         }
@@ -125,7 +125,7 @@ public class ExchangeRateRepository implements ExchangeRateCRUD<String, Exchange
 
             int updatedRows = statement.executeUpdate();
             if (updatedRows == 0) {
-                throw new ExchangeRateDoesNotExistException("Обменный курс для пары не найден");
+                throw new ExchangeRateDoesNotExistException("Exchange rate not found");
             }
 
             return find(baseCurrencyCode, targetCurrencyCode);
