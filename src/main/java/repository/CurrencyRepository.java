@@ -1,9 +1,9 @@
 package repository;
 
 import com.zaxxer.hikari.HikariDataSource;
-import exception.CurrencyAlreadyExistsException;
-import exception.DataBaseAccessException;
-import model.entity.Currency;
+import exceptions.CurrencyAlreadyExistsException;
+import exceptions.DataBaseAccessException;
+import models.entity.Currency;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class CurrencyRepository implements CurrencyCRUD<String, Currency> {
              PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
 
             ResultSet resultSet = statement.executeQuery();
-            List<model.entity.Currency> currencies = new ArrayList<>();
+            List<models.entity.Currency> currencies = new ArrayList<>();
 
             while (resultSet.next()) {
                 currencies.add(builder(resultSet));
@@ -55,7 +55,7 @@ public class CurrencyRepository implements CurrencyCRUD<String, Currency> {
     }
 
     @Override
-    public model.entity.Currency create(model.entity.Currency currency) {
+    public models.entity.Currency create(models.entity.Currency currency) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(CREATE_CURRENCY, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -66,17 +66,17 @@ public class CurrencyRepository implements CurrencyCRUD<String, Currency> {
             statement.executeUpdate();
             Long id = statement.getGeneratedKeys().getLong(1);
 
-            return new model.entity.Currency(id, currency.getCode(), currency.getName(), currency.getSign());
+            return new models.entity.Currency(id, currency.getCode(), currency.getName(), currency.getSign());
         } catch (SQLException e) {
-            if (e.getErrorCode() == 19) {
+            if (e.getErrorCode() == 19) { // UNIQUE INDEX
                 throw new CurrencyAlreadyExistsException("Currency with this code already exists");
             }
             throw new DataBaseAccessException("Server error");
         }
     }
 
-    private model.entity.Currency builder(ResultSet resultSet) throws SQLException {
-        return new model.entity.Currency(
+    private models.entity.Currency builder(ResultSet resultSet) throws SQLException {
+        return new models.entity.Currency(
                 resultSet.getLong("ID"),
                 resultSet.getString("Code"),
                 resultSet.getString("FullName"),
