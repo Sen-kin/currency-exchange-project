@@ -34,7 +34,8 @@ public class CurrenciesController extends HttpServlet {
         String code = req.getParameter("code");
         String name = req.getParameter("name");
         String sign = req.getParameter("sign");
-        ValidationUtil.currencyValidation(code, name, sign);
+        ValidationUtil.codeValidation(code);
+        ValidationUtil.nameAndSignValidation(name, sign);
 
         CurrencyDTO currencyDTO = new CurrencyDTO(null, code, name, sign);
 
