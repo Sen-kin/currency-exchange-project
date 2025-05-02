@@ -62,34 +62,48 @@ public class ExchangeRateService {
     }
 
     public ExchangeDTO exchange(String baseCurrencyCode, String targetCurrencyCode, Double amount) {
-        Double rate;
-        ExchangeRate exchangeRate = exchangeRateRepository.find(baseCurrencyCode, targetCurrencyCode);
-
-        if (exchangeRate == null) {
-            ExchangeRate reverseRate = exchangeRateRepository.find(targetCurrencyCode, baseCurrencyCode);
-            if (reverseRate == null) {
-                ExchangeRate baseToIntermediate = exchangeRateRepository.find(baseCurrencyCode, crossRateCurrency);
-                ExchangeRate intermediateToTarget = exchangeRateRepository.find(crossRateCurrency, targetCurrencyCode);
-                if (baseToIntermediate == null || intermediateToTarget == null) {
-                    throw new ExchangeRateDoesNotExistException("Failed to exchange");
-                }
-                rate = intermediateToTarget.getRate() * baseToIntermediate.getRate();
-            } else rate = 1.0 / reverseRate.getRate();
-        } else rate = exchangeRate.getRate();
-
-        Double convertedAmount = rate * amount;
-
         Currency baseCurrency = currencyRepository.find(baseCurrencyCode);
         Currency targetCurrency = currencyRepository.find(targetCurrencyCode);
 
         if (baseCurrency == null || targetCurrency == null) {
-            throw new CurrencyDoesNotExistException("Currency not found");
+            throw new CurrencyDoesNotExistException("Currency(ies) not found");
         }
+
+        Double rate;
+        ExchangeRate exchangeRate = exchangeRateRepository.find(baseCurrencyCode, targetCurrencyCode);
+
+        if (exchangeRate == null) {
+            rate = reverseExchange(targetCurrencyCode, baseCurrencyCode);
+            if (rate == null) {
+                rate = crossExchange(baseCurrencyCode, targetCurrencyCode);
+            }
+        } else rate = exchangeRate.getRate();
+
+        Double convertedAmount = rate * amount;
 
         CurrencyDTO baseCurrencyDTO = currencyMapper.toCurrencyDTO(baseCurrency);
         CurrencyDTO targetCurrencyDTO = currencyMapper.toCurrencyDTO(targetCurrency);
 
         return new ExchangeDTO(baseCurrencyDTO, targetCurrencyDTO, rate, amount, convertedAmount);
+    }
+
+    private Double reverseExchange(String targetCurrencyCode, String baseCurrencyCode) {
+        ExchangeRate reverseRate = exchangeRateRepository.find(targetCurrencyCode, baseCurrencyCode);
+        if (reverseRate == null) {
+            return null;
+        }
+        return 1.0 / reverseRate.getRate();
+    }
+
+    private Double crossExchange(String baseCurrencyCode, String targetCurrencyCode) {
+        ExchangeRate baseToIntermediate = exchangeRateRepository.find(baseCurrencyCode, crossRateCurrency);
+        ExchangeRate intermediateToTarget = exchangeRateRepository.find(crossRateCurrency, targetCurrencyCode);
+
+        if (baseToIntermediate == null || intermediateToTarget == null) {
+            throw new ExchangeRateDoesNotExistException("Failed to exchange");
+        }
+
+        return intermediateToTarget.getRate() * baseToIntermediate.getRate();
     }
 }
 
